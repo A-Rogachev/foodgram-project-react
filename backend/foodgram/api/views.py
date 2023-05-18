@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from djoser.views import UserViewSet
+from recipes.models import Tag
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, TagSerializer
 
 User = get_user_model()
 
@@ -31,3 +33,13 @@ class CustomUserViewSet(UserViewSet):
         Персональная страница пользователя.
         """
         return Response(self.serializer_class(request.user).data)
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    Вьюсет для работы с моделью Tag (тег для рецепта).
+    """
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    pagination_class = None

@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 
+from recipes.models import Tag
+
 User = get_user_model()
 
 
@@ -25,3 +27,13 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         return False
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Tag (тег для рецепта).
+    """
+
+    class Meta:
+        model = Tag
+        fields = '__all__'
