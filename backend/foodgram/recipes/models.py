@@ -52,3 +52,32 @@ class Tag(models.Model):
         Строковое представление тега.
         """
         return f'{self.name}'
+
+
+class Ingredient(models.Model):
+    """
+    Ингредиент для рецепта.
+    """
+
+    name = models.CharField(
+        verbose_name='Название',
+        help_text='Введите название ингредиента',
+        max_length=200,
+        unique=True,
+        db_index=True,
+    )
+    measurement_unit = models.CharField(
+        verbose_name='Единица измерения',
+        help_text='Введите единицу измерения',
+        max_length=200,
+    ) 
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
+    def __str__(self) -> str:
+        """
+        Строковое представление ингредиента.
+        """
+        return f'{self.name}'

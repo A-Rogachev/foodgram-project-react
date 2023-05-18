@@ -1,13 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from djoser.views import UserViewSet
-from recipes.models import Tag
+from recipes.models import Ingredient, Tag
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from .serializers import CustomUserSerializer, TagSerializer
+from .serializers import (CustomUserSerializer, IngredientSerializer,
+                          TagSerializer)
 
 User = get_user_model()
 
@@ -42,4 +43,14 @@ class TagViewSet(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    """
+    Вьюсет для работы с моделью Ingredient (ингредиент для рецепта).
+    """
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
     pagination_class = None
