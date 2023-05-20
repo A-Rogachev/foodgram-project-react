@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .serializers import (CustomUserSerializer, IngredientSerializer, 
                           TagSerializer)
-
+from django.db.models import F   
 User = get_user_model()
 
 
@@ -19,7 +19,10 @@ class CustomUserViewSet(UserViewSet):
     """
 
     # http_method_names = ['get', 'post', 'head', 'patch', 'delete']
+    # queryset = User.objects.annotate(is_subscribed=)
     queryset = User.objects.all()
+    queryset = User.objects.all().annotate(is_subscribed=True or False)
+    # queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = CustomUserSerializer
     pagination_class = PageNumberPagination
     # lookup_field = 'username'

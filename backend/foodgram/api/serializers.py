@@ -12,7 +12,7 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User (пользователь).
     """
 
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
@@ -24,9 +24,6 @@ class CustomUserSerializer(UserSerializer):
             'last_name',
             'is_subscribed',
         )
-
-    def get_is_subscribed(self, obj):
-        return False
 
 
 class TagSerializer(serializers.ModelSerializer):
