@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 
 class Tag(models.Model):
     """
@@ -81,3 +84,54 @@ class Ingredient(models.Model):
         Строковое представление ингредиента.
         """
         return f'{self.name}'
+
+
+class Subscription(models.Model):
+    """
+    Модель подписки.
+    """
+
+    subscriber = models.ForeignKey(
+        User,
+        verbose_name='Подписчик',
+        related_name='subscriber',
+        on_delete=models.CASCADE,
+    )
+
+    publisher = models.ForeignKey(
+        User,
+        verbose_name='Автор контента',
+        related_name='publisher',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subscriber', 'publisher'],
+                name='unique follow'
+            ),
+            models.CheckConstraint(
+                name='prevent_self_follow',
+                check=~models.Q(subscriber=models.F('publisher')),
+            ),
+        ]
+
+    def __str__(self) -> str:
+        """
+        Строковое представление подписки.
+        """
+
+        return f'{self.subscriber} подписан на {self.publisher}'
+    
+    def __repr__(self) -> str:
+        """
+        Формальное строковое представление подписки.
+        """
+
+        return (
+            f'{self.__class__.__name__}'
+            f'(subscriber={self.subscriber}, publisher={self.publisher})'
+        )
