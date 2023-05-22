@@ -35,6 +35,7 @@ class CustomUserViewSet(UserViewSet):
         """
         return Response(self.serializer_class(request.user).data)
 
+
     @action(['GET'], detail=False)
     def subscriptions(self, request, *args, **kwargs):
         """
@@ -49,11 +50,55 @@ class CustomUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST', 'DELETE'], detail=True)
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         """
         Подписка/отписка на автора рецепта.
         """
-        publisher = 
+        request_publisher = get_object_or_404(User, pk=id)
+        if request.method == 'POST':
+            if request.user == request_publisher:
+                return Response(
+                    {'errors': 'Нельзя подписаться на самого себя!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            subscripion, created = Subscription.objects.get_or_create(
+                subscriber=request.user,
+                publisher=request_publisher,
+            )
+            if not created:
+                return Response(
+                    {'errors': 'Нельзя подписаться повторно!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                serializer = SubscriptionSerializer(
+                    subscripion,
+                    context={'user_request': request}
+                )
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED,
+                )
+        elif request.method == 'DELETE':
+            try:
+                request_subscription = Subscription.objects.get(
+                    subscriber=request.user,
+                    publisher=request_publisher,
+                )
+            except Subscription.DoesNotExist:
+                return Response(
+                    {
+                        'errors': (
+                            'На данного пользователя подписка не оформлена!'
+                        )
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            request_subscription.delete()
+            return Response(
+                {'detail': 'Подписка успешно отменена!'},
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
 
 class TagViewSet(mixins.ListModelMixin,
@@ -96,7 +141,7 @@ class RecipeViewset(viewsets.ModelViewSet):
         """
         current_recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            favorite, created = FavoriteRecipe.objects.get_or_create(
+            _, created = FavoriteRecipe.objects.get_or_create(
                 user=request.user,
                 recipe=current_recipe,
             )

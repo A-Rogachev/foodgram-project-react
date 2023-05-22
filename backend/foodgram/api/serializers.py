@@ -32,12 +32,10 @@ class CustomUserSerializer(UserSerializer):
         Возвращает true/false в зависимости, от того, является ли
         текущий пользователь подписчиком.
         """
-        return bool(
-            Subscription.objects.filter(
-                subscriber=self.context.get('request').user,
-                publisher=user_obj.pk
-            )
-        )
+        return Subscription.objects.filter(
+            subscriber=self.context.get('request').user,
+            publisher=user_obj.pk
+        ).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -112,12 +110,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, recipe_obj):
-        return bool(
-            FavoriteRecipe.objects.filter(
-                user=self.context.get('request').user,
-                recipe=recipe_obj,
-            )
-        )
+        return FavoriteRecipe.objects.filter(
+            user=self.context.get('request').user,
+            recipe=recipe_obj,
+        ).exists()
+
     
     def get_is_in_shopping_cart(self, obj):
         return False
@@ -168,15 +165,15 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'recipes_count',
         )
 
-    def get_recipes(self, recipe_obj):
+    def get_recipes(self, obj):
         """
         Рецепты автора, на которого подписан пользователь.
         """
-        limit_of_objects_on_page = self.context.get(
-            'user_request'
-        ).GET.get('recipes_limit')
-        recipe_obj = recipe_obj.publisher.recipes.all()
+        request = self.context.get('user_request')
+        limit_of_objects_on_page = request.query_params.get('recipes_limit')
+        
+        recipes = obj.publisher.recipes.all()
         if limit_of_objects_on_page:
-            recipe_obj = recipe_obj[:int(limit_of_objects_on_page)]
-        serializer = FavoriteRecipeSerializer(recipe_obj, many=True)
+            recipes = recipes[:int(limit_of_objects_on_page)]
+        serializer = FavoriteRecipeSerializer(recipes, many=True)
         return serializer.data
