@@ -12,7 +12,7 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User (пользователь).
     """
 
-    is_subscribed = serializers.BooleanField(read_only=True)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -23,6 +23,19 @@ class CustomUserSerializer(UserSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
+        )
+        read_only_fields = ('is_subscribed', )
+
+    def get_is_subscribed(self, user_obj):
+        """
+        Возвращает true/false в зависимости, от того, является ли
+        текущий пользователь подписчиком.
+        """
+        return bool(
+            Subscription.objects.filter(
+                subscriber=self.context.get('request').user,
+                publisher=user_obj.pk
+            )
         )
 
 

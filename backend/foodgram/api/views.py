@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
 from djoser.views import UserViewSet
 from recipes.models import Ingredient, Subscription, Tag
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -19,9 +18,7 @@ class CustomUserViewSet(UserViewSet):
     """
 
     # http_method_names = ['get', 'post', 'head', 'patch', 'delete']
-    # queryset = User.objects.annotate(is_subscribed=)
     queryset = User.objects.all()
-    queryset = User.objects.all().annotate(is_subscribed=True or False)
     # queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = CustomUserSerializer
     pagination_class = PageNumberPagination
@@ -56,7 +53,9 @@ class CustomUserViewSet(UserViewSet):
         return paginator.get_paginated_response(serializer.data)
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(mixins.ListModelMixin,
+                mixins.RetrieveModelMixin,
+                viewsets.GenericViewSet):
     """
     Вьюсет для работы с моделью Tag (тег для рецепта).
     """
@@ -66,7 +65,9 @@ class TagViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(mixins.ListModelMixin,
+                        mixins.RetrieveModelMixin,
+                        viewsets.GenericViewSet):
     """
     Вьюсет для работы с моделью Ingredient (ингредиент для рецепта).
     """
