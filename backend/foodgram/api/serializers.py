@@ -126,6 +126,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
     """
     Сериализатор для добавления/удаления рецепта из списка избранного.
+    Также используется для вывода рецептов, на автора которых 
+    подписан пользователь.
     """
 
     class Meta:
@@ -137,3 +139,44 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
         read_only_fields = ('__all__', )
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для подписки/отписки на авторов.
+    """
+
+    email = serializers.ReadOnlyField(source='publisher.email')
+    id = serializers.ReadOnlyField(source='publisher.id')
+    username = serializers.ReadOnlyField(source='publisher.username')
+    first_name = serializers.ReadOnlyField(source='publisher.first_name')
+    last_name = serializers.ReadOnlyField(source='publisher.last_name')
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='publisher.recipes.count')
+    is_subscribed = serializers.BooleanField(default=True, read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+
+    def get_recipes(self, recipe_obj):
+        """
+        Рецепты автора, на которого подписан пользователь.
+        """
+        limit_of_objects_on_page = self.context.get(
+            'user_request'
+        ).GET.get('recipes_limit')
+        recipe_obj = recipe_obj.publisher.recipes.all()
+        if limit_of_objects_on_page:
+            recipe_obj = recipe_obj[:int(limit_of_objects_on_page)]
+        serializer = FavoriteRecipeSerializer(recipe_obj, many=True)
+        return serializer.data

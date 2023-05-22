@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
-                          TagSerializer)
+                          SubscriptionSerializer, TagSerializer)
 
 User = get_user_model()
 
@@ -40,18 +40,20 @@ class CustomUserViewSet(UserViewSet):
         """
         Возвращает всех авторов, чьим подписчиком является пользователь.
         """
-        publishers_ids = Subscription.objects.filter(
-            subscriber=request.user.pk
-        ).values_list('publisher', flat=True)
-        publishers = User.objects.filter(pk__in=publishers_ids).all()
-
-        paginator = PageNumberPagination()
-        serializer = self.serializer_class(
-            publishers,
-            many=True
+        publishers = request.user.subscriber.all()
+        serializer = SubscriptionSerializer(
+            self.paginate_queryset(publishers),
+            many=True,
+            context={'user_request': request}
         )
-        paginator.paginate_queryset(publishers, request)
-        return paginator.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def subscribe(self, request, pk):
+        """
+        Подписка/отписка на автора рецепта.
+        """
+        publisher = 
 
 
 class TagViewSet(mixins.ListModelMixin,
