@@ -141,6 +141,11 @@ class Recipe(models.Model):
     Модель рецепта.
     """
 
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор публикации',
+        on_delete=models.CASCADE,
+    )
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название рецепта',
@@ -150,14 +155,13 @@ class Recipe(models.Model):
     text = models.TextField(
         verbose_name='Описание',
         help_text='Введите описание рецепта',
-
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
         help_text='Введите время приготовления по рецепту',
-        default=2,
+        default=1,
         validators=[
-            MinValueValidator(2),
+            MinValueValidator(1),
         ]
     )
     image = models.BinaryField(
@@ -167,11 +171,14 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         'Ingredient',
         related_name='recipes',
-        through='IngredientAmount'
+        through='IngredientAmount',
+        verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField(
         'Tag',
         related_name='recipes',
+        verbose_name='Тег',
+        help_text='Выберите тег',
     )
 
     class Meta:
