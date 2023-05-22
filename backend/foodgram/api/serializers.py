@@ -1,9 +1,9 @@
+from api.utils import Base64ImageField
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
+from recipes.models import (Ingredient, IngredientAmount, Recipe, Subscription,
+                            Tag)
 from rest_framework import serializers
-
-from recipes.models import Ingredient, Recipe, Subscription, Tag
-from api.utils import Base64ImageField
 
 User = get_user_model()
 
@@ -60,15 +60,55 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IngredientSerializerWithMeasurement(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Ingredient (ингредиент для рецепта),
+    использующийся в запросах рецептов.
+    """
+
+    id = serializers.ReadOnlyField(source='ingredient.pk')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
+    
+    id = serializers.ReadOnlyField(source='ingredient.pk')
+
+    class Meta:
+        model = IngredientAmount
+        fields = ('id', 'name', 'measurement_unit', )
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели Recipe (рецепты).
     """
     
     image = Base64ImageField()
+    tags = TagSerializer(read_only=True, many=True)
+    author = CustomUserSerializer(read_only=True)
+    ingredients = IngredientSerializerWithMeasurement(
+        read_only=True,
+        many=True,
+    )
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
-            '__all__',
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
         )
+
+    def get_is_favorited(self, obj):
+        return False
+    
+    def get_is_in_shopping_cart(self, obj):
+        return False

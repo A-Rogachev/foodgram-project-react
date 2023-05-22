@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .serializers import (CustomUserSerializer, IngredientSerializer, 
-                          TagSerializer)
+                          TagSerializer, RecipeSerializer)
 User = get_user_model()
 
 
@@ -16,9 +16,7 @@ class CustomUserViewSet(UserViewSet):
     Вьюсет для работы с моделью User (пользователь).
     """
 
-
     queryset = User.objects.all()
-    # queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = CustomUserSerializer
     pagination_class = PageNumberPagination
     # lookup_field = 'username'
@@ -83,4 +81,4 @@ class RecipeViewset(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
-    
+    serializer_class = RecipeSerializer

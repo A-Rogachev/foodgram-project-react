@@ -1,8 +1,19 @@
 from django.contrib import admin
 
-from recipes.models import Ingredient, Subscription, Tag
+from recipes.models import Ingredient, Subscription, Tag, Recipe, IngredientAmount
 
+
+class RecipeIngredientInline(admin.TabularInline):
+    model = IngredientAmount
+
+
+class RecipeAdmin(admin.ModelAdmin):
+    inlines = [RecipeIngredientInline]
+
+    class Meta:
+        model = Recipe
 
 admin.site.register(Ingredient)
 admin.site.register(Tag)
+admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Subscription)
