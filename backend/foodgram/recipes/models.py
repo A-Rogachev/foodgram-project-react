@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
+
 User = get_user_model()
 
 class Tag(models.Model):
@@ -122,14 +123,12 @@ class Subscription(models.Model):
         """
         Строковое представление подписки.
         """
-
         return f'{self.subscriber} подписан на {self.publisher}'
     
     def __repr__(self) -> str:
         """
         Формальное строковое представление подписки.
         """
-
         return (
             f'{self.__class__.__name__}'
             f'(subscriber={self.subscriber}, publisher={self.publisher})'
@@ -164,8 +163,9 @@ class Recipe(models.Model):
             MinValueValidator(1),
         ]
     )
-    image = models.BinaryField(
-        verbose_name='Картинка, закодированная в Base64',
+    image = models.ImageField(
+        upload_to='recipes/',
+        verbose_name='Изображение для рецепта',
         help_text='Загрузите изображение рецепта',
     )
     ingredients = models.ManyToManyField(
@@ -219,9 +219,11 @@ class IngredientAmount(models.Model):
         verbose_name = 'Ингредиенты в рецепте'
         verbose_name_plural = 'Ингредиенты в рецептах'
 
-
     def __str__(self):
         """
         Строковое представление таблицы ингредиентов для рецептов.
         """
-        return f'{self.recipe} - {self.ingredient} - {self.amount} {self.ingredient.measurement_unit} '
+        return (
+            f'{self.ingredient} ({self.ingredient.measurement_unit}) - '
+            f'{self.amount}'
+        )
