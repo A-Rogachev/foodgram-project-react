@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 
-from recipes.models import Ingredient, Subscription, Tag
+from recipes.models import Ingredient, Recipe, Subscription, Tag
+from api.utils import Base64ImageField
 
 User = get_user_model()
 
@@ -57,3 +58,17 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Recipe (рецепты).
+    """
+    
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            '__all__',
+        )

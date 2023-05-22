@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
-from recipes.models import Ingredient, Subscription, Tag
+from recipes.models import Ingredient, Recipe, Subscription, Tag
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from .serializers import (CustomUserSerializer, IngredientSerializer, 
                           TagSerializer)
-from django.db.models import F   
 User = get_user_model()
 
 
@@ -17,7 +16,7 @@ class CustomUserViewSet(UserViewSet):
     Вьюсет для работы с моделью User (пользователь).
     """
 
-    # http_method_names = ['get', 'post', 'head', 'patch', 'delete']
+
     queryset = User.objects.all()
     # queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = CustomUserSerializer
@@ -75,3 +74,13 @@ class IngredientViewSet(mixins.ListModelMixin,
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
+
+
+class RecipeViewset(viewsets.ModelViewSet):
+    """
+    Вьюсет для работы с моделью Recipe (рецепт).
+    """
+
+    queryset = Recipe.objects.all()
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    
