@@ -1,7 +1,6 @@
-from django.db import models
-from django.core.validators import RegexValidator
 from django.contrib.auth import get_user_model
-
+from django.core.validators import MinValueValidator, RegexValidator
+from django.db import models
 
 User = get_user_model()
 
@@ -135,3 +134,87 @@ class Subscription(models.Model):
             f'{self.__class__.__name__}'
             f'(subscriber={self.subscriber}, publisher={self.publisher})'
         )
+
+
+class Recipe(models.Model):
+    """
+    Модель рецепта.
+    """
+
+    name = models.CharField(
+        verbose_name='Название',
+        help_text='Введите название рецепта',
+        unique=True,
+        max_length=200,
+    )
+    text = models.TextField(
+        verbose_name='Описание',
+        help_text='Введите описание рецепта',
+
+    )
+    cooking_time = models.IntegerField(
+        verbose_name='Время приготовления (в минутах)',
+        help_text='Введите время приготовления по рецепту',
+        default=2,
+        validators=[
+            MinValueValidator(2),
+        ]
+    )
+    image = models.BinaryField(
+        verbose_name='Картинка, закодированная в Base64',
+        help_text='Загрузите изображение рецепта',
+    )
+    ingredients = models.ManyToManyField(
+        'Ingredient',
+        related_name='recipes',
+        through='IngredientAmount'
+    )
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name='recipes',
+    )
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
+    def __str__(self) -> str:
+        """
+        Строковое представление рецепта.
+        """
+        return f'{self.name}'
+    
+
+class IngredientAmount(models.Model):
+    """
+    Промежуточная модель количества ингредиентов.
+    """
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='recipes',
+        on_delete=models.CASCADE,
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        related_name='ingredients',
+        on_delete=models.CASCADE,
+    )
+    amount = models.IntegerField(
+        verbose_name='Количество',
+        help_text='Выберите количество ингредиента',
+        default=1,
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
+
+    class Meta:
+        verbose_name = 'Ингредиенты в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецептах'
+
+
+    def __str__(self):
+        """
+        Строковое представление таблицы ингредиентов для рецептов.
+        """
+        return f'{self.recipe} - {self.ingredient} - {self.amount} {self.ingredient.measurement_unit} '
