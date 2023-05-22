@@ -1,13 +1,17 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from recipes.models import Ingredient, Recipe, Subscription, Tag
-from rest_framework import mixins, viewsets
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe, Subscription,
+                            Tag)
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from .serializers import (CustomUserSerializer, IngredientSerializer, 
-                          TagSerializer, RecipeSerializer)
+from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
+                          IngredientSerializer, RecipeSerializer,
+                          TagSerializer)
+
 User = get_user_model()
 
 
@@ -82,3 +86,42 @@ class RecipeViewset(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = RecipeSerializer
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def favorite(self, request, pk):
+        """
+        Добавление/удаление рецепта в/из списка избранных.
+        """
+        current_recipe = get_object_or_404(Recipe, pk=pk)
+        if request.method == 'POST':
+            favorite, created = FavoriteRecipe.objects.get_or_create(
+                user=request.user,
+                recipe=current_recipe,
+            )
+            if not created:
+                return Response(
+                    {'errors': 'Рецепт уже находится в избранном!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                serializer = FavoriteRecipeSerializer(current_recipe)
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED,
+                )
+        elif request.method == 'DELETE':
+            try:
+                favorite_recipe = FavoriteRecipe.objects.get(
+                    user=request.user,
+                    recipe=current_recipe,
+                )
+            except FavoriteRecipe.DoesNotExist:
+                return Response(
+                    {'errors': 'Рецепта нет в списке избранного!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            favorite_recipe.delete()
+            return Response(
+                {'detail': 'Рецепт успешно удален из избранного'},
+                status=status.HTTP_204_NO_CONTENT,
+            )

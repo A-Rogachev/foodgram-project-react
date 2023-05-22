@@ -1,8 +1,8 @@
 from api.utils import Base64ImageField
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
-from recipes.models import (Ingredient, IngredientAmount, Recipe, Subscription,
-                            Tag)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
+                            Recipe, Subscription, Tag)
 from rest_framework import serializers
 
 User = get_user_model()
@@ -111,8 +111,29 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_is_favorited(self, obj):
-        return False
+    def get_is_favorited(self, recipe_obj):
+        return bool(
+            FavoriteRecipe.objects.filter(
+                user=self.context.get('request').user,
+                recipe=recipe_obj,
+            )
+        )
     
     def get_is_in_shopping_cart(self, obj):
         return False
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для добавления/удаления рецепта из списка избранного.
+    """
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+        read_only_fields = ('__all__', )
