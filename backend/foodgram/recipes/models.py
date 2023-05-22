@@ -198,13 +198,13 @@ class IngredientAmount(models.Model):
     """
     recipe = models.ForeignKey(
         Recipe,
-        related_name='recipes',
+        related_name='ingredients_amount',
         on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient,
-        related_name='ingredients',
-        on_delete=models.CASCADE,
+        related_name='ingredients_amount',
+        on_delete=models.PROTECT,
     )
     amount = models.IntegerField(
         verbose_name='Количество',
@@ -226,4 +226,39 @@ class IngredientAmount(models.Model):
         return (
             f'{self.ingredient} ({self.ingredient.measurement_unit}) - '
             f'{self.amount}'
+        )
+
+
+class FavoriteRecipe(models.Model):
+    """
+    Модель списка избранных рецептов.
+    """
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorite_list',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorite_list',
+    )
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique favorite_list'
+            ),
+        ]
+
+    def __str__(self):
+        """
+        Строковое представление избранных рецептов.
+        """
+        return (
+            f'{self.user} - "{self.recipe}"'
         )

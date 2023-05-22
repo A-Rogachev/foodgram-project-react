@@ -69,12 +69,15 @@ class IngredientSerializerWithMeasurement(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.pk')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
-    
-    id = serializers.ReadOnlyField(source='ingredient.pk')
 
     class Meta:
         model = IngredientAmount
-        fields = ('id', 'name', 'measurement_unit', )
+        fields = (
+            'id',
+            'name',
+            'measurement_unit',
+            'amount',
+        )
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -88,6 +91,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializerWithMeasurement(
         read_only=True,
         many=True,
+        source='ingredients_amount'
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
