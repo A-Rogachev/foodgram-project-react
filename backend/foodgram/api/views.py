@@ -28,7 +28,7 @@ class CustomUserViewSet(UserViewSet):
     # permission_classes = (IsAdmin, )
     # filter_backends = (filters.SearchFilter, )
     # search_fields = ('username', )
-    
+
     @action(['GET'], detail=False)
     def me(self, request, *args, **kwargs):
         """
@@ -142,24 +142,23 @@ class RecipeViewset(viewsets.ModelViewSet):
         """
         author_id = self.request.query_params.get('author')
         if author_id:
-            return self.queryset.filter(
+            self.queryset = self.queryset.filter(
                 author=get_object_or_404(User, pk=author_id)
             )
         
         is_favorited = self.request.query_params.get('is_favorited')
         if is_favorited == '1':
-            return self.queryset.filter(favorite_list__user=self.request.user)
+            self.queryset = self.queryset.filter(favorite_list__user=self.request.user)
         elif is_favorited == '0':
-            return self.queryset.exclude(favorite_list__user=self.request.user)
+            self.queryset = self.queryset.exclude(favorite_list__user=self.request.user)
         
         tags = self.request.query_params.getlist('tags')
         if tags:
-            return self.queryset.filter(tags__slug__in=tags)
+            self.queryset = self.queryset.filter(tags__slug__in=tags)
         
         return self.queryset
 
 
-    
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
         """
