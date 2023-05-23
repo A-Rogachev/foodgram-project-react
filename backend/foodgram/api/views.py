@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer)
+from api.paginators import PageNumberPaginationWithLimit
 
 User = get_user_model()
 
@@ -22,7 +23,7 @@ class CustomUserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = PageNumberPaginationWithLimit
     # lookup_field = 'username'
     # permission_classes = (IsAdmin, )
     # filter_backends = (filters.SearchFilter, )
@@ -133,6 +134,7 @@ class RecipeViewset(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = RecipeSerializer
+    pagination_class = PageNumberPaginationWithLimit
         
     def get_queryset(self):
         """
@@ -149,11 +151,11 @@ class RecipeViewset(viewsets.ModelViewSet):
             return self.queryset.filter(favorite_list__user=self.request.user)
         elif is_favorited == '0':
             return self.queryset.exclude(favorite_list__user=self.request.user)
-
+        
         tags = self.request.query_params.getlist('tags')
         if tags:
             return self.queryset.filter(tags__slug__in=tags)
-
+        
         return self.queryset
 
 
