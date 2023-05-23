@@ -150,7 +150,9 @@ class RecipeViewset(viewsets.ModelViewSet):
         elif is_favorited == '0':
             return self.queryset.exclude(favorite_list__user=self.request.user)
 
-
+        tags = self.request.query_params.getlist('tags')
+        if tags:
+            return self.queryset.filter(tags__slug__in=tags)
 
         return self.queryset
 
