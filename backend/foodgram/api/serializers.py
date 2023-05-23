@@ -1,4 +1,4 @@
-from api.utils import Base64ImageField
+from drf_extra_fields.fields import Base64ImageField
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer
@@ -153,14 +153,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         new_ingredients = []
 
-        for ingredient, amount in ingredients.values():
-            new_ingredients.append(
-                IngredientAmount(
-                    recipe=recipe,
-                    ingredients=ingredient,
-                    amount=amount,
+        for ingredient in ingredients:
+                new_ingredients.append(
+                    IngredientAmount(
+                        recipe=recipe,
+                        ingredient=Ingredient.objects.get(pk=ingredient.get('id')),
+                        amount=ingredient.get('amount'),
+                    )
                 )
-            )
         IngredientAmount.objects.bulk_create(new_ingredients)
         return recipe
 

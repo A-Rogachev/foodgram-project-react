@@ -24,7 +24,7 @@ def validate_ingredients(ingredients=None):
     if ingredients is None:
         raise serializers.ValidationError('Необходим хотя бы один ингредиент!')
     ingredients_ids = [ingredient.get('id') for ingredient in ingredients]
-    if len(set(ingredients)) != len(ingredients_ids):
+    if len(set(ingredients_ids)) != len(ingredients_ids):
         raise serializers.ValidationError('Ингридиенты должны иметь уникальный id!')
     ingredients_amounts = [ingredient.get('amount') for ingredient in ingredients]
     if any([int(amount) <=0 for amount in ingredients_amounts]):
