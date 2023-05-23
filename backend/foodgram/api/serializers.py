@@ -117,10 +117,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             recipe=recipe_obj,
         ).exists()
 
-    
     def get_is_in_shopping_cart(self, obj):
         return False
-
 
     def validate(self, data):
         """
@@ -141,6 +139,25 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
         return data
 
+    @staticmethod
+    def create_ingredients(ingredients, recipe):
+        """
+        Создает новые ингредиенты (модель IngredientAmount) при
+        создании/обновлении рецепта.
+        """
+        new_ingredients = []
+        for ingredient in ingredients:
+                new_ingredients.append(
+                    IngredientAmount(
+                        recipe=recipe,
+                        ingredient=Ingredient.objects.get(
+                            pk=ingredient.get('id')
+                        ),
+                        amount=ingredient.get('amount'),
+                    )
+                )
+        IngredientAmount.objects.bulk_create(new_ingredients)
+
     @transaction.atomic
     def create(self, validated_data):
         """
@@ -150,19 +167,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-
-        new_ingredients = []
-
-        for ingredient in ingredients:
-                new_ingredients.append(
-                    IngredientAmount(
-                        recipe=recipe,
-                        ingredient=Ingredient.objects.get(pk=ingredient.get('id')),
-                        amount=ingredient.get('amount'),
-                    )
-                )
-        IngredientAmount.objects.bulk_create(new_ingredients)
+        self.create_ingredients(ingredients, recipe)
         return recipe
+
+    @transaction.atomic
+    def update(self, recipe, validated_data):
+        """
+        Обновление рецепта.
+        """
+        tags = validated_data.pop('tags')
+        recipe.tags.clear()
+        recipe.tags.set(tags)
+        ingredients = validated_data.pop('ingredients')
+        recipe.ingredients.clear()
+        self.create_ingredients(ingredients, recipe)
+
+        return super().update(recipe, validated_data)
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
