@@ -1,10 +1,12 @@
 from api.utils import Base64ImageField
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, Subscription, Tag)
 from rest_framework import serializers
-
+from api.validators import validate_tags, validate_ingredients
+from django.db import transaction
 User = get_user_model()
 
 
@@ -118,6 +120,49 @@ class RecipeSerializer(serializers.ModelSerializer):
     
     def get_is_in_shopping_cart(self, obj):
         return False
+
+
+    def validate(self, data):
+        """
+        Валидация данных при POST/PATCH запросе.
+        """
+        tags_for_recipe = self.initial_data.get('tags')
+        validate_tags(tags_for_recipe)
+
+        ingredients_for_recipe = self.initial_data.get('ingredients')
+        validate_ingredients(ingredients_for_recipe)
+        
+        data.update(
+            {
+                'tags': tags_for_recipe,
+                'ingredients': ingredients_for_recipe,
+                'author': self.context.get('request').user,
+            }
+        )
+        return data
+
+    @transaction.atomic
+    def create(self, validated_data):
+        """
+        Добавление нового рецепта.
+        """
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+
+        new_ingredients = []
+
+        for ingredient, amount in ingredients.values():
+            new_ingredients.append(
+                IngredientAmount(
+                    recipe=recipe,
+                    ingredients=ingredient,
+                    amount=amount,
+                )
+            )
+        IngredientAmount.objects.bulk_create(new_ingredients)
+        return recipe
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
