@@ -133,7 +133,29 @@ class RecipeViewset(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = RecipeSerializer
+        
+    def get_queryset(self):
+        """
+        Возвращает список объектов в зависимости от переданных аргументов.
+        """
+        author_id = self.request.query_params.get('author')
+        if author_id:
+            return self.queryset.filter(
+                author=get_object_or_404(User, pk=author_id)
+            )
+        
+        is_favorited = self.request.query_params.get('is_favorited')
+        if is_favorited == '1':
+            return self.queryset.filter(favorite_list__user=self.request.user)
+        elif is_favorited == '0':
+            return self.queryset.exclude(favorite_list__user=self.request.user)
 
+
+
+        return self.queryset
+
+
+    
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
         """
