@@ -83,7 +83,7 @@ class Ingredient(models.Model):
         """
         Строковое представление ингредиента.
         """
-        return f'{self.name}'
+        return f'{self.name} ({self.measurement_unit})'
 
 
 class Subscription(models.Model):
@@ -165,7 +165,7 @@ class Recipe(models.Model):
         ]
     )
     image = models.ImageField(
-        upload_to='recipes/',
+        upload_to='recipes/images/',
         verbose_name='Изображение для рецепта',
         help_text='Загрузите изображение рецепта',
     )

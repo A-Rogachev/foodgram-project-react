@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -177,3 +177,6 @@ SUBSCRIBE_MESSAGES = {
     'delete_failure_404': 'На данного пользователя подписка не оформлена!',
     'delete_success': 'Подписка успешно отменена!',
 }
+
+# Path to datafiles to load into DB
+DATA_FILE_PATH = os.path.join(BASE_DIR.parent.parent, 'data/')
