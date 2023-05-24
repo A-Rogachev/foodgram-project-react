@@ -1,18 +1,21 @@
-from api.paginators import PageNumberPaginationWithLimit
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
-                            Subscription, Tag)
+
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.conf import settings
+
+from .paginators import PageNumberPaginationWithLimit
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           ShoppingCartSerializer, SubscriptionSerializer,
                           TagSerializer)
-from api.utils import delete_request_obj, create_request_obj
+from .utils import create_request_obj, delete_request_obj
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
+                            Subscription, Tag)
+
 User = get_user_model()
 
 
@@ -47,20 +50,23 @@ class CustomUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST', 'DELETE'], detail=True)
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         """
         Подписка/отписка на автора рецепта.
         """
-        request_publisher = get_object_or_404(User, pk=pk)
+        request_publisher = get_object_or_404(User, pk=id)
+        new_args = {
+            'subscriber': request.user,
+            'publisher': request_publisher,
+        }
         if request.method == 'POST':
             if request.user == request_publisher:
                 return Response(
                     {'errors': 'Нельзя подписаться на самого себя!'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            subscripion, created = Subscription.objects.get_or_create(
-                subscriber=request.user,
-                publisher=request_publisher,
+            subscription, created = Subscription.objects.get_or_create(
+                **new_args
             )
             if not created:
                 return Response(
@@ -69,7 +75,7 @@ class CustomUserViewSet(UserViewSet):
                 )
             else:
                 serializer = SubscriptionSerializer(
-                    subscripion,
+                    subscription,
                     context={'user_request': request}
                 )
                 return Response(
@@ -77,24 +83,10 @@ class CustomUserViewSet(UserViewSet):
                     status=status.HTTP_201_CREATED,
                 )
         elif request.method == 'DELETE':
-            try:
-                request_subscription = Subscription.objects.get(
-                    subscriber=request.user,
-                    publisher=request_publisher,
-                )
-            except Subscription.DoesNotExist:
-                return Response(
-                    {
-                        'errors': (
-                            'На данного пользователя подписка не оформлена!'
-                        )
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            request_subscription.delete()
-            return Response(
-                {'detail': 'Подписка успешно отменена!'},
-                status=status.HTTP_204_NO_CONTENT,
+            return delete_request_obj(
+                model_class=Subscription,
+                user_args=new_args,
+                messages=settings.SUBSCRIBE_MESSAGES,
             )
 
 
@@ -141,7 +133,7 @@ class RecipeViewset(viewsets.ModelViewSet):
             self.queryset = self.queryset.filter(
                 author=get_object_or_404(User, pk=author_id)
             )
-        
+
         is_favorited = self.request.query_params.get('is_favorited')
         if is_favorited == '1':
             self.queryset = self.queryset.filter(
@@ -165,7 +157,7 @@ class RecipeViewset(viewsets.ModelViewSet):
         Добавление/удаление рецепта в/из списка избранных.
         """
         request_recipe = get_object_or_404(Recipe, pk=pk)
-        user_args = {
+        new_args = {
             'user': request.user,
             'recipe': request_recipe,
         }
@@ -174,13 +166,13 @@ class RecipeViewset(viewsets.ModelViewSet):
                 request_obj=request_recipe,
                 model_class=FavoriteRecipe,
                 serializer=FavoriteRecipeSerializer,
-                user_args=user_args,
+                user_args=new_args,
                 messages=settings.FAVORITES_MESSAGES,
             )
         elif request.method == 'DELETE':
             return delete_request_obj(
                 model_class=FavoriteRecipe,
-                user_args=user_args,
+                user_args=new_args,
                 messages=settings.FAVORITES_MESSAGES,
             )
 
@@ -190,7 +182,7 @@ class RecipeViewset(viewsets.ModelViewSet):
         Добавляет/удаляет рецепт из списка покупок.
         """
         request_recipe = get_object_or_404(Recipe, pk=pk)
-        user_args = {
+        new_args = {
             'user': request.user,
             'recipe': request_recipe,
         }
@@ -199,13 +191,13 @@ class RecipeViewset(viewsets.ModelViewSet):
                 request_obj=request_recipe,
                 model_class=ShoppingCart,
                 serializer=ShoppingCartSerializer,
-                user_args=user_args,
+                user_args=new_args,
                 messages=settings.SHOPPING_CART_MESSAGES,
             )
         elif request.method == 'DELETE':
             return delete_request_obj(
                 model_class=ShoppingCart,
-                user_args=user_args,
+                user_args=new_args,
                 messages=settings.SHOPPING_CART_MESSAGES,
             )
 

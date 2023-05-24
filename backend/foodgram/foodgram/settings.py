@@ -167,9 +167,13 @@ FAVORITES_MESSAGES = {
     'delete_failure_404': 'Рецепта нет в списке избранного!',
     'delete_success': 'Рецепт успешно удален из избранного!',
 }
-
 SHOPPING_CART_MESSAGES = {
     'post_failure_repeating': 'Рецепт уже в корзине для покупок!',
     'delete_failure_404': 'Рецепта нет в списке покупок!',
     'delete_success': 'Рецепт успешно удален из корзины!',
+}
+SUBSCRIBE_MESSAGES = {
+    'post_failure_repeating': 'Нельзя подписаться повторно!',
+    'delete_failure_404': 'На данного пользователя подписка не оформлена!',
+    'delete_success': 'Подписка успешно отменена!',
 }
