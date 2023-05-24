@@ -263,3 +263,50 @@ class FavoriteRecipe(models.Model):
         return (
             f'{self.user} - "{self.recipe}"'
         )
+
+
+class ShoppingList(models.Model):
+    """
+    Модель для списка покупок.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='shopping',
+        verbose_name='Пользователь',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='shopping',
+        verbose_name='Рецепт',
+    )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_shopping_item'
+            ),
+        ]
+
+    def __str__(self) -> str:
+        """
+        Строковое представление рецепта в списке покупок.
+        """
+        return (
+            f'Рецепт "{self.recipe}" находится в списке покупок'
+            f' пользователя "{self.user}"'
+        )
+    
+    def __repr__(self) -> str:
+        """
+        Формальное строковое представление рецепта в списке
+        покупок.
+        """
+        return (
+            f'{self.__class__.__name__}.objects.create('
+            f'user={self.user}, recipe={self.recipe}'
+        )
