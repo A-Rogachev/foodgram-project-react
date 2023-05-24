@@ -2,8 +2,8 @@ from api.paginators import PageNumberPaginationWithLimit
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe, Subscription,
-                            Tag, ShoppingCart)
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
+                            Subscription, Tag)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -11,7 +11,8 @@ from rest_framework.response import Response
 
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer)
+                          ShoppingCartSerializer, SubscriptionSerializer,
+                          TagSerializer)
 
 User = get_user_model()
 
@@ -198,5 +199,41 @@ class RecipeViewset(viewsets.ModelViewSet):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
+    @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
-        ...
+        """
+        Добавляет/удаляет рецепт из списка покупок.
+        """
+        request_recipe = get_object_or_404(Recipe, id=pk)
+        if request.method == 'POST':
+            _, created = ShoppingCart.objects.get_or_create(
+                user=request.user,
+                recipe=request_recipe,
+            )
+            if not created:
+                return Response(
+                    {'errors': 'Рецепт уже в корзине для покупок!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                serializer = ShoppingCartSerializer(request_recipe)
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED,
+                )
+        elif request.method == 'DELETE':
+            try:
+                recipe_in_cart = ShoppingCart.objects.get(
+                    user=request.user,
+                    recipe=request_recipe,
+                )
+            except ShoppingCart.DoesNotExist:
+                return Response(
+                    {'errors': 'Рецепта нет в списке покупок!'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            recipe_in_cart.delete()
+            return Response(
+                {'detail': 'Рецепт успешно удален из корзины!'},
+                status=status.HTTP_204_NO_CONTENT,
+            )

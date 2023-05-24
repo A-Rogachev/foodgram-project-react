@@ -188,7 +188,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
     """
     Сериализатор для добавления/удаления рецепта из списка избранного.
     Также используется для вывода рецептов, на автора которых 
-    подписан пользователь.
+    подписан пользователь и добавления рецепта в список покупок.
     """
 
     class Meta:
@@ -251,3 +251,11 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingCart
         fields = '__all__'
+
+    def to_representation(self, instance):
+        """
+        Возвращает сериализатор рецепта для записи.
+        """
+        return FavoriteRecipeSerializer(
+            instance
+        ).data
