@@ -265,7 +265,7 @@ class FavoriteRecipe(models.Model):
         )
 
 
-class ShoppingList(models.Model):
+class ShoppingCart(models.Model):
     """
     Модель для списка покупок.
     """

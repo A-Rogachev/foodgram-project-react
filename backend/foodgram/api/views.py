@@ -1,8 +1,9 @@
+from api.paginators import PageNumberPaginationWithLimit
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, Subscription,
-                            Tag)
+                            Tag, ShoppingCart)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -11,7 +12,6 @@ from rest_framework.response import Response
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer)
-from api.paginators import PageNumberPaginationWithLimit
 
 User = get_user_model()
 
@@ -197,3 +197,6 @@ class RecipeViewset(viewsets.ModelViewSet):
                 {'detail': 'Рецепт успешно удален из избранного'},
                 status=status.HTTP_204_NO_CONTENT,
             )
+
+    def shopping_cart(self, request, pk):
+        ...

@@ -1,9 +1,8 @@
 from drf_extra_fields.fields import Base64ImageField
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
-                            Recipe, Subscription, Tag)
+                            Recipe, Subscription, Tag, ShoppingCart)
 from rest_framework import serializers
 from api.validators import validate_tags, validate_ingredients
 from django.db import transaction
@@ -242,3 +241,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             recipes = recipes[:int(limit_of_objects_on_page)]
         serializer = FavoriteRecipeSerializer(recipes, many=True)
         return serializer.data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для работы с моделью ShoppingCart (список покупок).
+    """
+
+    class Meta:
+        model = ShoppingCart
+        fields = '__all__'
