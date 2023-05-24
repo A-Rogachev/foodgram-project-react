@@ -158,3 +158,18 @@ LIMIT_USERNAME_LENGTH: int = 150
 LIMIT_LAST_NAME_LENGTH: int = 150
 LIMIT_FIRST_NAME_LENGTH: int = 150
 LIMIT_PASSWORD_LENGTH: int = 150
+
+
+
+
+FAVORITES_MESSAGES = {
+    'post_failure_repeating': 'Рецепт уже находится в избранном!',
+    'delete_failure_404': 'Рецепта нет в списке избранного!',
+    'delete_success': 'Рецепт успешно удален из избранного!',
+}
+
+SHOPPING_CART_MESSAGES = {
+    'post_failure_repeating': 'Рецепт уже в корзине для покупок!',
+    'delete_failure_404': 'Рецепта нет в списке покупок!',
+    'delete_success': 'Рецепт успешно удален из корзины!',
+}

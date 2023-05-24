@@ -256,6 +256,4 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         """
         Возвращает сериализатор рецепта для записи.
         """
-        return FavoriteRecipeSerializer(
-            instance
-        ).data
+        return FavoriteRecipeSerializer(instance).data
