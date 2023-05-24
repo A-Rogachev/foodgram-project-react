@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
+                            Recipe, ShoppingCart, Subscription, Tag)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -13,8 +15,6 @@ from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           ShoppingCartSerializer, SubscriptionSerializer,
                           TagSerializer)
 from .utils import create_request_obj, delete_request_obj
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
-                            Subscription, Tag)
 
 User = get_user_model()
 
@@ -201,10 +201,32 @@ class RecipeViewset(viewsets.ModelViewSet):
                 messages=settings.SHOPPING_CART_MESSAGES,
             )
 
-    @action(methods='GET', detail=False)
+    @action(methods=['GET'], detail=False)
     def download_shopping_cart(self, request):
         """
         Скачивание списка покупок файлом в формате ".txt".
         """
 
-        ...
+        current_user = User.objects.get(pk=self.request.user.pk)
+        if not current_user.shopping.exists():
+            return Response(
+                {'errors': 'Ваш список покупок пуст!'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
+
+            shopping_ingredients = IngredientAmount.objects.filter(
+                recipe__shopping__user=current_user
+            ).values(
+                'ingredient__name',
+                'ingredient__measurement_unit',
+            ).annotate(
+                Sum('amount', distinct=True)
+            )
+
+            print(shopping_ingredients)
+            return Response(
+                {'detail': 'spisok est'}
+            )
+
+        
