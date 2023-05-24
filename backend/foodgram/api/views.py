@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, HttpResponse
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Subscription, Tag)
@@ -214,7 +216,6 @@ class RecipeViewset(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         else:
-
             shopping_ingredients = IngredientAmount.objects.filter(
                 recipe__shopping__user=current_user
             ).values(
@@ -223,10 +224,27 @@ class RecipeViewset(viewsets.ModelViewSet):
             ).annotate(
                 Sum('amount', distinct=True)
             )
-
-            print(shopping_ingredients)
-            return Response(
-                {'detail': 'spisok est'}
+            date_of_loading_list = datetime.now().strftime("%d.%m.%Y (%H:%M)")
+            shopping_list = []
+            shopping_list.append('Пользователь: ' + current_user.username)
+            shopping_list_name = f'Список покупок на {date_of_loading_list}'
+            shopping_list.append(shopping_list_name)
+            shopping_list.append('-' * len(shopping_list_name) + '\n')
+            for ingredient in shopping_ingredients:
+                shopping_list.append(
+                    (
+                        f'* {ingredient.get("ingredient__name")} '
+                        f'({ingredient.get("ingredient__measurement_unit")})'
+                        + f' - {ingredient.get("amount__sum")}'
+                    )
+                )
+            shopping_list.append(f'\nсервис "Продуктовый помощник" {datetime.now().year} г.')
+            response = HttpResponse(
+                content='\n'.join(shopping_list),
+                content_type='text/plain; charset=UTF-8',
             )
-
-        
+            response['Content-Disposition'] = (
+                f'attachment; filename=Shopping List '
+                f'({current_user.username}) {date_of_loading_list}.txt'
+            )
+            return response
