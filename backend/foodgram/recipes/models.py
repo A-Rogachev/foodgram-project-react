@@ -147,7 +147,7 @@ class Recipe(models.Model):
 
     author = models.ForeignKey(
         User,
-        verbose_name='Автор публикации',
+        verbose_name='Автор рецепта',
         on_delete=models.CASCADE,
         related_name='recipes',
     )
@@ -256,8 +256,8 @@ class FavoriteRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранное'
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

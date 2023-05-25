@@ -16,8 +16,8 @@ class User(AbstractUser):
         unique=True,
     )
     username = models.CharField(
-        verbose_name='Уникальный юзернейм',
-        help_text='Придумайте юзернейм',    
+        verbose_name='Имя пользователя',
+        help_text='Придумайте имя профиля',    
         max_length=settings.LIMIT_USERNAME_LENGTH,
         null=False,
         unique=True,
