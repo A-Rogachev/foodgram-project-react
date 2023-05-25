@@ -186,6 +186,10 @@ class Recipe(models.Model):
         verbose_name='Тег',
         help_text='Выберите тег',
     )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True,
+    )
 
     class Meta:
         verbose_name = 'Рецепт'

@@ -21,7 +21,7 @@ data_for_database: Dict[Model, str] = {
 }
 
 class Command(BaseCommand):
-    help = 'Загружает данные из файла csv в базу данных.'
+    help = 'Загружает данные из файлов .csv или .json в базу данных.'
 
     def handle(self, *args, **kwargs):
         for db_model, datafile_and_fields in data_for_database.items():
