@@ -29,7 +29,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'in_favorite_list')
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name', )
-    
+
     class Meta:
         model = Recipe
 
@@ -38,7 +38,7 @@ class RecipeAdmin(admin.ModelAdmin):
         Общее число добавлений рецепта в избранное.
         """
         return obj.favorite_list.count()
-    
+
     in_favorite_list.short_description = 'Число добавления в избранное'
 
 

@@ -67,7 +67,9 @@ class IngredientSerializerWithMeasurement(serializers.ModelSerializer):
 
     id = serializers.ReadOnlyField(source='ingredient.pk')
     name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = IngredientAmount
@@ -83,7 +85,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели Recipe (рецепты).
     """
-    
+
     image = Base64ImageField()
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
@@ -128,7 +130,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         ingredients_for_recipe = self.initial_data.get('ingredients')
         validate_ingredients(ingredients_for_recipe)
-        
+
         data.update(
             {
                 'tags': tags_for_recipe,
@@ -146,15 +148,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         """
         new_ingredients = []
         for ingredient in ingredients:
-                new_ingredients.append(
-                    IngredientAmount(
-                        recipe=recipe,
-                        ingredient=Ingredient.objects.get(
-                            pk=ingredient.get('id')
-                        ),
-                        amount=ingredient.get('amount'),
-                    )
+            new_ingredients.append(
+                IngredientAmount(
+                    recipe=recipe,
+                    ingredient=Ingredient.objects.get(
+                        pk=ingredient.get('id')
+                    ),
+                    amount=ingredient.get('amount'),
                 )
+            )
         IngredientAmount.objects.bulk_create(new_ingredients)
 
     @transaction.atomic
@@ -187,7 +189,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class FavoriteRecipeSerializer(serializers.ModelSerializer):
     """
     Сериализатор для добавления/удаления рецепта из списка избранного.
-    Также используется для вывода рецептов, на автора которых 
+    Также используется для вывода рецептов, на автора которых
     подписан пользователь и добавления рецепта в список покупок.
     """
 
@@ -235,7 +237,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         """
         request = self.context.get('user_request')
         limit_of_objects_on_page = request.query_params.get('recipes_limit')
-        
+
         recipes = obj.publisher.recipes.all()
         if limit_of_objects_on_page:
             recipes = recipes[:int(limit_of_objects_on_page)]

@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
-
 User = get_user_model()
+
 
 class Tag(models.Model):
     """
@@ -38,7 +38,7 @@ class Tag(models.Model):
         max_length=200,
         validators=[
             RegexValidator(
-                regex= r'^[-a-zA-Z0-9_]+$',
+                regex=r'^[-a-zA-Z0-9_]+$',
                 message=(
                     'Слаг может состоять только из цифр/букв и знака "_"!'
                 ),
@@ -72,7 +72,7 @@ class Ingredient(models.Model):
         verbose_name='Единица измерения',
         help_text='Введите единицу измерения',
         max_length=200,
-    ) 
+    )
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -129,15 +129,6 @@ class Subscription(models.Model):
         Строковое представление подписки.
         """
         return f'{self.subscriber} подписан на {self.publisher}'
-    
-    def __repr__(self) -> str:
-        """
-        Формальное строковое представление подписки.
-        """
-        return (
-            f'{self.__class__.__name__}'
-            f'(subscriber={self.subscriber}, publisher={self.publisher})'
-        )
 
 
 class Recipe(models.Model):
@@ -200,7 +191,7 @@ class Recipe(models.Model):
         Строковое представление рецепта.
         """
         return f'{self.name}'
-    
+
 
 class IngredientAmount(models.Model):
     """
@@ -308,14 +299,4 @@ class ShoppingCart(models.Model):
         return (
             f'Рецепт "{self.recipe}" находится в списке покупок'
             f' пользователя "{self.user}"'
-        )
-    
-    def __repr__(self) -> str:
-        """
-        Формальное строковое представление рецепта в списке
-        покупок.
-        """
-        return (
-            f'{self.__class__.__name__}.objects.create('
-            f'user={self.user}, recipe={self.recipe}'
         )

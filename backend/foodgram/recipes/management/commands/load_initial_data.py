@@ -20,6 +20,7 @@ data_for_database: Dict[Model, str] = {
     ),
 }
 
+
 class Command(BaseCommand):
     help = 'Загружает данные из файлов .csv или .json в базу данных.'
 
@@ -53,8 +54,8 @@ class Command(BaseCommand):
             except FileNotFoundError:
                 self.stdout.write(
                     self.style.ERROR(
-                        f'Файла {datafile_and_fields[0]} нет в рабочем каталоге!'
-                        '\nРабота загрузчика прервана!'
+                        f'Файла {datafile_and_fields[0]} нет в '
+                        'рабочем каталоге!\nРабота загрузчика прервана!'
                     )
                 )
                 sys.exit()
@@ -69,7 +70,8 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f'Данные из файла {datafile_and_fields[0]} успешно загружены'
+                        f'Данные из файла {datafile_and_fields[0]} '
+                        'успешно загружены'
                     )
                 )
         self.stdout.write(

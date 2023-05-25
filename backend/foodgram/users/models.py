@@ -19,7 +19,7 @@ class User(AbstractUser):
     )
     username = models.CharField(
         verbose_name='Имя пользователя',
-        help_text='Придумайте имя профиля',    
+        help_text='Придумайте имя профиля',
         max_length=settings.LIMIT_USERNAME_LENGTH,
         null=False,
         unique=True,
@@ -56,14 +56,3 @@ class User(AbstractUser):
         Строковое представление пользователя.
         """
         return f'{self.username} ({self.first_name} {self.last_name})'
-    
-
-    def __repr__(self) -> str:
-        """
-        Формальное строковое преставление пользователя.
-        """
-        return (
-            f'{self.__class__.__name__}(username="{self.username}", '
-            f'last_name="{self.last_name}", first_name="{self.first_name}", '
-            f'email="{self.email}", password="{self.password}")'
-        )

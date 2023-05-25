@@ -39,7 +39,7 @@ def validate_ingredients(ingredients=None):
     ingredients_amounts = [
         ingredient.get('amount') for ingredient in ingredients
     ]
-    if any([int(amount) <=0 for amount in ingredients_amounts]):
+    if any([int(amount) <= 0 for amount in ingredients_amounts]):
         raise serializers.ValidationError(
             'Минимальное количество ингридиента = 1!'
         )

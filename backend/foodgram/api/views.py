@@ -37,7 +37,6 @@ class CustomUserViewSet(UserViewSet):
         """
         return Response(self.serializer_class(request.user).data)
 
-
     @action(['GET'], detail=False)
     def subscriptions(self, request, *args, **kwargs):
         """
@@ -93,8 +92,8 @@ class CustomUserViewSet(UserViewSet):
 
 
 class TagViewSet(mixins.ListModelMixin,
-                mixins.RetrieveModelMixin,
-                viewsets.GenericViewSet):
+                 mixins.RetrieveModelMixin,
+                 viewsets.GenericViewSet):
     """
     Вьюсет для работы с моделью Tag (тег для рецепта).
     """
@@ -125,7 +124,7 @@ class RecipeViewset(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPaginationWithLimit
-        
+
     def get_queryset(self):
         """
         Возвращает список объектов в зависимости от переданных аргументов.
@@ -135,7 +134,6 @@ class RecipeViewset(viewsets.ModelViewSet):
             self.queryset = self.queryset.filter(
                 author=get_object_or_404(User, pk=author_id)
             )
-
         is_favorited = self.request.query_params.get('is_favorited')
         if is_favorited == '1':
             self.queryset = self.queryset.filter(
@@ -145,13 +143,10 @@ class RecipeViewset(viewsets.ModelViewSet):
             self.queryset = self.queryset.exclude(
                 favorite_list__user=self.request.user
             )
-        
         tags = self.request.query_params.getlist('tags')
         if tags:
             self.queryset = self.queryset.filter(tags__slug__in=tags)
-        
         return self.queryset
-
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
@@ -238,7 +233,9 @@ class RecipeViewset(viewsets.ModelViewSet):
                         + f' - {ingredient.get("amount__sum")}'
                     )
                 )
-            shopping_list.append(f'\nсервис "Продуктовый помощник" {datetime.now().year} г.')
+            shopping_list.append(
+                f'\nсервис "Продуктовый помощник" {datetime.now().year} г.'
+            )
             response = HttpResponse(
                 content='\n'.join(shopping_list),
                 content_type='text/plain; charset=UTF-8',

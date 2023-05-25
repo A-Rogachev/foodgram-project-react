@@ -137,15 +137,14 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.IsAuthenticated',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
-} 
+}
 
 # Developer settings
 LIMIT_USER_EMAIL_LENGTH: int = 254
@@ -154,9 +153,7 @@ LIMIT_LAST_NAME_LENGTH: int = 150
 LIMIT_FIRST_NAME_LENGTH: int = 150
 LIMIT_PASSWORD_LENGTH: int = 150
 
-
-
-
+# Messages for functions in utils.py
 FAVORITES_MESSAGES = {
     'post_failure_repeating': 'Рецепт уже находится в избранном!',
     'delete_failure_404': 'Рецепта нет в списке избранного!',
