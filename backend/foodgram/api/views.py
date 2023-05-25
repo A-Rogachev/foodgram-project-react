@@ -3,20 +3,22 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, HttpResponse
+from django.shortcuts import HttpResponse, get_object_or_404
 from djoser.views import UserViewSet
-from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Subscription, Tag)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .paginators import PageNumberPaginationWithLimit
+from .permissions import IsAuthorOrAdminOrReadOnly
 from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           ShoppingCartSerializer, SubscriptionSerializer,
                           TagSerializer)
 from .utils import create_request_obj, delete_request_obj
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
+                            Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
 
@@ -101,6 +103,7 @@ class TagViewSet(mixins.ListModelMixin,
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
+    permission_classes = (AllowAny, )
 
 
 class IngredientViewSet(mixins.ListModelMixin,
@@ -113,6 +116,7 @@ class IngredientViewSet(mixins.ListModelMixin,
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
+    permission_classes = (AllowAny, )
 
 
 class RecipeViewset(viewsets.ModelViewSet):
@@ -124,6 +128,7 @@ class RecipeViewset(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPaginationWithLimit
+    permission_classes = (IsAuthorOrAdminOrReadOnly, )
 
     def get_queryset(self):
         """
