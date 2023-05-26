@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (CustomUserViewSet, IngredientViewSet,
                     TagViewSet, RecipeViewset)
-from django.conf.urls import (handler400, handler403, handler404, handler500)
 
 router = DefaultRouter()
 router.register('users', CustomUserViewSet)

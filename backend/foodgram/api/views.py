@@ -6,7 +6,7 @@ from django.shortcuts import HttpResponse, get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .paginators import PageNumberPaginationWithLimit
@@ -30,14 +30,22 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     pagination_class = PageNumberPaginationWithLimit
 
-    @action(['GET'], detail=False)
+    @action(
+        ['GET'],
+        detail=False,
+        permission_classes=(IsAuthenticated, ),
+    )
     def me(self, request, *args, **kwargs):
         """
         Персональная страница пользователя.
         """
         return Response(self.serializer_class(request.user).data)
 
-    @action(['GET'], detail=False)
+    @action(
+        ['GET'],
+        detail=False,
+        permission_classes=(IsAuthenticated, ),
+    )
     def subscriptions(self, request, *args, **kwargs):
         """
         Возвращает всех авторов, чьим подписчиком является пользователь.
@@ -50,7 +58,11 @@ class CustomUserViewSet(UserViewSet):
         )
         return self.get_paginated_response(serializer.data)
 
-    @action(methods=['POST', 'DELETE'], detail=True)
+    @action(
+        methods=['POST', 'DELETE'],
+        detail=True,
+        permission_classes=(IsAuthenticated, )    
+    )
     def subscribe(self, request, id):
         """
         Подписка/отписка на автора рецепта.
