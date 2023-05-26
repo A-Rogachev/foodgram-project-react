@@ -33,8 +33,11 @@ class CustomUserSerializer(UserSerializer):
         Возвращает true/false в зависимости, от того, является ли
         текущий пользователь подписчиком.
         """
+        subscriber = self.context.get('request').user
+        if subscriber.is_anonymous:
+            return False
         return Subscription.objects.filter(
-            subscriber=self.context.get('request').user,
+            subscriber=subscriber,
             publisher=user_obj.pk
         ).exists()
 
@@ -113,13 +116,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, recipe_obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
         return FavoriteRecipe.objects.filter(
-            user=self.context.get('request').user,
+            user=user,
             recipe=recipe_obj,
         ).exists()
 
-    def get_is_in_shopping_cart(self, obj):
-        return False
+    def get_is_in_shopping_cart(self, recipe_obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return ShoppingCart.objects.filter(
+            user=user,
+            recipe=recipe_obj,
+        ).exists()
 
     def validate(self, data):
         """

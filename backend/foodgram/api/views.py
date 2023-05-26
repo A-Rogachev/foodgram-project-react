@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
@@ -21,7 +20,6 @@ from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Subscription, Tag)
 
 User = get_user_model()
-
 
 class CustomUserViewSet(UserViewSet):
     """
@@ -129,7 +127,9 @@ class RecipeViewset(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPaginationWithLimit
     permission_classes = (IsAuthorOrAdminOrReadOnly, )
+    # permission_classes = (AllowAny, )
 
+    
     def get_queryset(self):
         """
         Возвращает список объектов в зависимости от переданных аргументов.

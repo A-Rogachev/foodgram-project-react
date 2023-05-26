@@ -19,8 +19,6 @@ class Tag(models.Model):
         verbose_name='Цвет виджета тега',
         help_text='Введите текст для тега',
         max_length=7,
-        blank=True,
-        null=True,
         validators=[
             RegexValidator(
                 regex=r'^#[A-Z0-9_]{6}$',
@@ -185,6 +183,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ['pub_date']
 
     def __str__(self) -> str:
         """
@@ -207,7 +206,7 @@ class IngredientAmount(models.Model):
         related_name='ingredients_amount',
         on_delete=models.PROTECT,
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         help_text='Выберите количество ингредиента',
         default=1,
