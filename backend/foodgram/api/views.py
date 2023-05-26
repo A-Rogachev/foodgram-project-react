@@ -21,6 +21,7 @@ from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
 
 User = get_user_model()
 
+
 class CustomUserViewSet(UserViewSet):
     """
     Вьюсет для работы с моделью User (пользователь).
@@ -61,7 +62,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=['POST', 'DELETE'],
         detail=True,
-        permission_classes=(IsAuthenticated, )    
+        permission_classes=(IsAuthenticated, )
     )
     def subscribe(self, request, id):
         """
@@ -139,9 +140,7 @@ class RecipeViewset(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPaginationWithLimit
     permission_classes = (IsAuthorOrAdminOrReadOnly, )
-    # permission_classes = (AllowAny, )
 
-    
     def get_queryset(self):
         """
         Возвращает список объектов в зависимости от переданных аргументов.
