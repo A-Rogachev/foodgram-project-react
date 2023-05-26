@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
@@ -9,13 +10,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .paginators import PageNumberPaginationWithLimit
-from .permissions import IsAuthorOrAdminOrReadOnly
-from .serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
+from api.paginators import PageNumberPaginationWithLimit
+from api.permissions import IsAuthorOrAdminOrReadOnly
+from api.serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           ShoppingCartSerializer, SubscriptionSerializer,
                           TagSerializer)
-from .utils import create_request_obj, delete_request_obj
+from api.utils import create_request_obj, delete_request_obj
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Subscription, Tag)
 
