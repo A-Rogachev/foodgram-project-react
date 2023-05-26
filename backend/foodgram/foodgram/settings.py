@@ -180,7 +180,7 @@ FAVORITES_MESSAGES = {
 SHOPPING_CART_MESSAGES = {
     'post_failure_repeating': 'Рецепт уже в корзине для покупок!',
     'delete_failure_404': 'Рецепта нет в списке покупок!',
-    'delete_success': 'Рецепт успешно удален из корзины!',
+    'delete_success': 'Рецепт успешно удален из списка покупок!',
 }
 SUBSCRIBE_MESSAGES = {
     'post_failure_repeating': 'Нельзя подписаться повторно!',
