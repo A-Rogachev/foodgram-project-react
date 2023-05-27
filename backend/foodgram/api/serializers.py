@@ -6,7 +6,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from api.validators import validate_ingredients, validate_tags
-from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
+from recipes.models import (Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag)
 from users.models import Subscription
 
@@ -120,22 +120,30 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, recipe_obj):
+        """
+        Проверка, есть ли рецепт в списке избранных пользователя.
+        """
         user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return FavoriteRecipe.objects.filter(
-            user=user,
-            recipe=recipe_obj,
-        ).exists()
+        return (
+            user.is_authenticated
+            and recipe_obj.pk in user.favorite_recipes.values_list(
+                'recipe',
+                flat=True,
+            )
+        )
 
     def get_is_in_shopping_cart(self, recipe_obj):
+        """
+        Проверка, есть ли рецепт в списке покупок пользователя.
+        """
         user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return ShoppingCart.objects.filter(
-            user=user,
-            recipe=recipe_obj,
-        ).exists()
+        return (
+            user.is_authenticated
+            and recipe_obj.pk in user.shopping.values_list(
+                'recipe',
+                flat=True,
+            )
+        )
 
     def validate(self, data):
         """
