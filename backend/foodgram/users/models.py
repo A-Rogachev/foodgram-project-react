@@ -11,7 +11,7 @@ class User(AbstractUser):
     Модель пользователя.
     """
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('username', 'first_name', 'last_name', )
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name', 'password')
 
     email = models.EmailField(
         verbose_name='Электронная почта',
@@ -51,8 +51,56 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
         ordering = ('username', )
 
+    def save(self, *args, **kwargs):
+        """
+        Сохраняет имя и фамилию пользователя в корректном регистре.
+        """
+        self.first_name = self.first_name.capitalize()
+        self.last_name = self.last_name.capitalize()
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
         """
         Строковое представление пользователя.
         """
         return f'{self.username}'
+
+
+class Subscription(models.Model):
+    """
+    Модель подписки.
+    """
+
+    subscriber = models.ForeignKey(
+        User,
+        verbose_name='Подписчик',
+        related_name='subscriber',
+        on_delete=models.CASCADE,
+    )
+
+    publisher = models.ForeignKey(
+        User,
+        verbose_name='Автор контента',
+        related_name='publisher',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subscriber', 'publisher'],
+                name='unique follow'
+            ),
+            models.CheckConstraint(
+                name='prevent_self_follow',
+                check=~models.Q(subscriber=models.F('publisher')),
+            ),
+        ]
+
+    def __str__(self) -> str:
+        """
+        Строковое представление подписки.
+        """
+        return f'{self.subscriber} подписан на {self.publisher}'

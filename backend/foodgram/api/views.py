@@ -18,7 +18,8 @@ from api.serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
                           TagSerializer)
 from api.utils import create_request_obj, delete_request_obj
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Subscription, Tag)
+                            Recipe, ShoppingCart, Tag)
+from users.models import Subscription
 
 User = get_user_model()
 

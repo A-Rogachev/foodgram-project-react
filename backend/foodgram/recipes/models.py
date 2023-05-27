@@ -89,46 +89,6 @@ class Ingredient(models.Model):
         return f'{self.name} ({self.measurement_unit})'
 
 
-class Subscription(models.Model):
-    """
-    Модель подписки.
-    """
-
-    subscriber = models.ForeignKey(
-        User,
-        verbose_name='Подписчик',
-        related_name='subscriber',
-        on_delete=models.CASCADE,
-    )
-
-    publisher = models.ForeignKey(
-        User,
-        verbose_name='Автор контента',
-        related_name='publisher',
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['subscriber', 'publisher'],
-                name='unique follow'
-            ),
-            models.CheckConstraint(
-                name='prevent_self_follow',
-                check=~models.Q(subscriber=models.F('publisher')),
-            ),
-        ]
-
-    def __str__(self) -> str:
-        """
-        Строковое представление подписки.
-        """
-        return f'{self.subscriber} подписан на {self.publisher}'
-
-
 class Recipe(models.Model):
     """
     Модель рецепта.

@@ -7,7 +7,8 @@ from rest_framework import serializers
 
 from api.validators import validate_ingredients, validate_tags
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Subscription, Tag)
+                            Recipe, ShoppingCart, Tag)
+from users.models import Subscription
 
 User = get_user_model()
 
