@@ -13,7 +13,7 @@ from users.models import Subscription
 User = get_user_model()
 
 
-class CustomUserSerializer(UserSerializer):
+class FoodgramUserSerializer(UserSerializer):
     """
     Сериализатор для модели User (пользователь).
     """
@@ -95,7 +95,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     image = Base64ImageField()
     tags = TagSerializer(read_only=True, many=True)
-    author = CustomUserSerializer(read_only=True)
+    author = FoodgramUserSerializer(read_only=True)
     ingredients = IngredientSerializerWithMeasurement(
         read_only=True,
         many=True,

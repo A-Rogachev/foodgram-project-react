@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import RegexValidator
 from django.db import models
 
 from users.validators import validate_username_not_me
@@ -34,7 +35,12 @@ class User(AbstractUser):
         help_text='Введите ваше имя',
         max_length=settings.LIMIT_FIRST_NAME_LENGTH,
         validators=[
-            UnicodeUsernameValidator(),
+            RegexValidator(
+                regex=r'[А-Яа-яA-Za-z]+$',
+                message=(
+                    'Значение имени должно содержать только буквы!'
+                )
+            )
         ]
     )
     last_name = models.CharField(
@@ -42,7 +48,12 @@ class User(AbstractUser):
         help_text='Введите вашу фамилию',
         max_length=settings.LIMIT_LAST_NAME_LENGTH,
         validators=[
-            UnicodeUsernameValidator(),
+            RegexValidator(
+                regex=r'[А-Яа-яA-Za-z]+$',
+                message=(
+                    'Значение фамилии должно содержать только буквы!'
+                )
+            )
         ]
     )
 

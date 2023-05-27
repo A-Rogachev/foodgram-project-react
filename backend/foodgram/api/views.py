@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from api.paginators import PageNumberPaginationWithLimit
 from api.permissions import IsAuthorOrAdminOrReadOnly
-from api.serializers import (CustomUserSerializer, FavoriteRecipeSerializer,
+from api.serializers import (FoodgramUserSerializer, FavoriteRecipeSerializer,
                           IngredientSerializer, RecipeSerializer,
                           ShoppingCartSerializer, SubscriptionSerializer,
                           TagSerializer)
@@ -24,13 +24,13 @@ from users.models import Subscription
 User = get_user_model()
 
 
-class CustomUserViewSet(UserViewSet):
+class FoodgramUserViewSet(UserViewSet):
     """
     Вьюсет для работы с моделью User (пользователь).
     """
 
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = FoodgramUserSerializer
     pagination_class = PageNumberPaginationWithLimit
 
     @action(

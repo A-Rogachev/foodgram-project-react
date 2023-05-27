@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
@@ -13,7 +14,15 @@ class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название тега',
-        max_length=200,
+        max_length=settings.LIMIT_TAG_NAME_LENGTH,
+        validators=[
+            RegexValidator(
+                regex=r'[-А-Яа-яA-Za-z0-9\s]+$',
+                message=(
+                    'Символы $%^&#:;! запрещены для использования!'
+                )
+            )
+        ]
     )
     color = models.CharField(
         verbose_name='Цвет виджета тега',
@@ -29,19 +38,11 @@ class Tag(models.Model):
             ),
         ]
     )
-    slug = models.CharField(
+    slug = models.SlugField(
         verbose_name='Слаг тега',
         help_text='Введите слаг для тега',
         unique=True,
-        max_length=200,
-        validators=[
-            RegexValidator(
-                regex=r'^[-a-zA-Z0-9_]+$',
-                message=(
-                    'Слаг может состоять только из цифр/букв и знака "_"!'
-                ),
-            )
-        ],
+        max_length=settings.LIMIT_SLUG_NAME,
     )
 
     class Meta:
@@ -63,13 +64,13 @@ class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название ингредиента',
-        max_length=200,
+        max_length=settings.LIMIT_INGREDIENT_NAME_LENGTH,
         db_index=True,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
         help_text='Введите единицу измерения',
-        max_length=200,
+        max_length=settings.LIMIT_INGREDIENT_MEASUREMENT_NAME_LENGTH,
     )
 
     class Meta:
@@ -104,7 +105,7 @@ class Recipe(models.Model):
         verbose_name='Название',
         help_text='Введите название рецепта',
         unique=True,
-        max_length=200,
+        max_length=settings.LIMIT_RECIPE_NAME,
     )
     text = models.TextField(
         verbose_name='Описание',
