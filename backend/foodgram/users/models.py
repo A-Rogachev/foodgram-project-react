@@ -33,11 +33,17 @@ class User(AbstractUser):
         verbose_name='Имя',
         help_text='Введите ваше имя',
         max_length=settings.LIMIT_FIRST_NAME_LENGTH,
+        validators=[
+            UnicodeUsernameValidator(),
+        ]
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
         help_text='Введите вашу фамилию',
         max_length=settings.LIMIT_LAST_NAME_LENGTH,
+        validators=[
+            UnicodeUsernameValidator(),
+        ]
     )
 
     class Meta:
