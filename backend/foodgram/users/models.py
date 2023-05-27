@@ -23,9 +23,7 @@ class User(AbstractUser):
         verbose_name='Имя пользователя',
         help_text='Придумайте имя профиля',
         max_length=settings.LIMIT_USERNAME_LENGTH,
-        null=False,
         unique=True,
-        db_index=True,
         validators=[
             UnicodeUsernameValidator(),
             validate_username_not_me,
@@ -40,12 +38,6 @@ class User(AbstractUser):
         verbose_name='Фамилия',
         help_text='Введите вашу фамилию',
         max_length=settings.LIMIT_LAST_NAME_LENGTH,
-    )
-    password = models.CharField(
-        verbose_name='Пароль',
-        help_text='Введите пароль',
-        max_length=settings.LIMIT_PASSWORD_LENGTH,
-        unique=True,
     )
 
     class Meta:
