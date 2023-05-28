@@ -9,13 +9,14 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
+from django_filters.rest_framework import DjangoFilterBackend
 from api.paginators import PageNumberPaginationWithLimit
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from api.serializers import (FoodgramUserSerializer, FavoriteRecipeSerializer,
                              IngredientSerializer, RecipeSerializer,
                              ShoppingCartSerializer, SubscriptionSerializer,
                              TagSerializer)
+from api.filters import RecipesFilter
 from api.utils import create_request_obj, delete_request_obj
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag)
@@ -179,30 +180,13 @@ class RecipeViewset(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPaginationWithLimit
     permission_classes = (IsAuthorOrAdminOrReadOnly, )
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = RecipesFilter
 
     def get_queryset(self):
         """
         Возвращает список объектов в зависимости от переданных аргументов.
         """
-        author_id = self.request.query_params.get('author')
-        if author_id:
-            self.queryset = self.queryset.filter(
-                author=get_object_or_404(User, pk=author_id)
-            )
-        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
-        if is_in_shopping_cart:
-            self.queryset = self.queryset.filter(
-                shopping__user=self.request.user
-            )
-        is_favorited = self.request.query_params.get('is_favorited')
-        if is_favorited == '1':
-            self.queryset = self.queryset.filter(
-                favorite_list__user=self.request.user
-            )
-        elif is_favorited == '0':
-            self.queryset = self.queryset.exclude(
-                favorite_list__user=self.request.user
-            )
         tags = self.request.query_params.getlist('tags')
         if tags:
             self.queryset = self.queryset.filter(tags__slug__in=tags)
