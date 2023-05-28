@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 from django.contrib.auth import get_user_model
 
-from recipes.models import FavoriteRecipe, Tag
+from recipes.models import FavoriteRecipe, ShoppingCart, Tag
 
 User = get_user_model()
 
@@ -40,6 +40,9 @@ class RecipesFilter(filters.FilterSet):
         """
         Выдает рецепты, находящиеся в списке покупок пользователя.
         """
+        shopping_cart_ids = ShoppingCart.objects.filter(
+            user=self.request.user.pk
+        ).values_list('recipe', flat=True)
         if filter_value:
-            return queryset.filter(shopping__user=self.request.user)
-        return queryset.exclude(shopping__user=self.request.user)
+            return queryset.filter(pk__in=shopping_cart_ids)
+        return queryset.exclude(pk__in=shopping_cart_ids)

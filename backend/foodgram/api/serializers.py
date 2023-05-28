@@ -144,7 +144,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         return (
             user.is_authenticated
-            and recipe_obj.pk in user.shopping.values_list(
+            and recipe_obj.pk in user.shopping_recipe.values_list(
                 'recipe',
                 flat=True,
             )

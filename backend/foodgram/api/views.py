@@ -240,20 +240,28 @@ class RecipeViewset(viewsets.ModelViewSet):
         """
 
         current_user = User.objects.get(pk=self.request.user.pk)
-        if not current_user.shopping.exists():
+        if not current_user.shopping_recipe.exists():
             return Response(
                 {'errors': 'Ваш список покупок пуст!'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         else:
+            shopping_recipes = Recipe.objects.filter(
+                pk__in=[
+                    ShoppingCart.objects.filter(
+                        user=self.request.user.pk
+                    ).values_list('recipe', flat=True)
+                ]
+            ).values_list('pk', flat=True)
             shopping_ingredients = IngredientAmount.objects.filter(
-                recipe__shopping__user=current_user
+                recipe__in=shopping_recipes,
             ).values(
                 'ingredient__name',
                 'ingredient__measurement_unit',
             ).annotate(
                 Sum('amount', distinct=True)
             )
+
             date_of_loading_list = datetime.now().strftime("%d.%m.%Y (%H:%M)")
             new_shopping_list = []
             new_shopping_list.append('Пользователь: ' + current_user.username)
