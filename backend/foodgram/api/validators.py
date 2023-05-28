@@ -37,10 +37,10 @@ def validate_ingredients(ingredients=None):
         raise serializers.ValidationError(
             'Ингридиенты должны иметь уникальный id!'
         )
-    ingredients_amounts = [
+    amount_of_ingredients = [
         ingredient.get('amount') for ingredient in ingredients
     ]
-    if any([int(amount) <= 0 for amount in ingredients_amounts]):
+    if any([int(amount) <= 0 for amount in amount_of_ingredients]):
         raise serializers.ValidationError(
             'Минимальное количество ингридиента = 1!'
         )

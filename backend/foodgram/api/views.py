@@ -255,24 +255,24 @@ class RecipeViewset(viewsets.ModelViewSet):
                 Sum('amount', distinct=True)
             )
             date_of_loading_list = datetime.now().strftime("%d.%m.%Y (%H:%M)")
-            shopping_list = []
-            shopping_list.append('Пользователь: ' + current_user.username)
-            shopping_list_name = f'Список покупок на {date_of_loading_list}'
-            shopping_list.append(shopping_list_name)
-            shopping_list.append('-' * len(shopping_list_name) + '\n')
+            new_shopping_list = []
+            new_shopping_list.append('Пользователь: ' + current_user.username)
+            new_shopping_list_name = f'Список покупок на {date_of_loading_list}'
+            new_shopping_list.append(new_shopping_list_name)
+            new_shopping_list.append('-' * len(new_shopping_list_name) + '\n')
             for ingredient in shopping_ingredients:
-                shopping_list.append(
+                new_shopping_list.append(
                     (
                         f'* {ingredient.get("ingredient__name")} '
                         f'({ingredient.get("ingredient__measurement_unit")})'
                         + f' - {ingredient.get("amount__sum")}'
                     )
                 )
-            shopping_list.append(
+            new_shopping_list.append(
                 f'\nсервис "Продуктовый помощник" {datetime.now().year} г.'
             )
             response = HttpResponse(
-                content='\n'.join(shopping_list),
+                content='\n'.join(new_shopping_list),
                 content_type='text/plain; charset=UTF-8',
             )
             response['Content-Disposition'] = (
