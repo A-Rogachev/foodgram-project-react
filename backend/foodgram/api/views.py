@@ -183,15 +183,6 @@ class RecipeViewset(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipesFilter
 
-    def get_queryset(self):
-        """
-        Возвращает список объектов в зависимости от переданных аргументов.
-        """
-        tags = self.request.query_params.getlist('tags')
-        if tags:
-            self.queryset = self.queryset.filter(tags__slug__in=tags)
-        return self.queryset
-
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
         """
