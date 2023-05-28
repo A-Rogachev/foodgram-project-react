@@ -1,3 +1,4 @@
+from colorfield.fields import ColorField
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
@@ -24,19 +25,11 @@ class Tag(models.Model):
             )
         ]
     )
-    color = models.CharField(
+    color = ColorField(
+        default='#FF0000',
         verbose_name='Цвет виджета тега',
-        help_text='Введите текст для тега',
-        max_length=7,
-        validators=[
-            RegexValidator(
-                regex=r'^#[A-Z0-9_]{6}$',
-                message=(
-                    'Обозначение цвета должно состоять из знака # '
-                    ' и 6 символов (заглавные буквы/цифры) после!'
-                ),
-            ),
-        ]
+        help_text='Выберите цвет для тега',
+
     )
     slug = models.SlugField(
         verbose_name='Слаг тега',
