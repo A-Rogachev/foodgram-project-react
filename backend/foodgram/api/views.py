@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
-from djoser.views import UserViewSet
+from djoser.serializers import SetPasswordSerializer
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,9 +13,9 @@ from rest_framework.response import Response
 from api.paginators import PageNumberPaginationWithLimit
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from api.serializers import (FoodgramUserSerializer, FavoriteRecipeSerializer,
-                          IngredientSerializer, RecipeSerializer,
-                          ShoppingCartSerializer, SubscriptionSerializer,
-                          TagSerializer)
+                             IngredientSerializer, RecipeSerializer,
+                             ShoppingCartSerializer, SubscriptionSerializer,
+                             TagSerializer)
 from api.utils import create_request_obj, delete_request_obj
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag)
@@ -24,7 +24,7 @@ from users.models import Subscription
 User = get_user_model()
 
 
-class FoodgramUserViewSet(UserViewSet):
+class FoodgramUserViewSet(viewsets.ModelViewSet):
     """
     Вьюсет для работы с моделью User (пользователь).
     """
@@ -32,6 +32,43 @@ class FoodgramUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = FoodgramUserSerializer
     pagination_class = PageNumberPaginationWithLimit
+
+    def get_permissions(self):
+        """
+        Определяет доступ в зависимости от аутентификации пользователя.
+        """
+        if self.action in ('retrieve', 'me', 'subscriptions'):
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthorOrAdminOrReadOnly]
+        return [permission() for permission in permission_classes]
+
+    @action(
+        ['POST'],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+    )
+    def set_password(self, request, *args, **kwargs):
+        serializer = SetPasswordSerializer(
+            data=request.data,
+            context={'request': request},
+        )
+        if serializer.is_valid(raise_exception=True):
+            self.request.user.set_password(
+                serializer.validated_data['new_password'],
+            )
+            self.request.user.save()
+            return Response(
+                'Пароль успешно изменен',
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @action(
         ['GET'],
@@ -66,11 +103,11 @@ class FoodgramUserViewSet(UserViewSet):
         detail=True,
         permission_classes=(IsAuthenticated, )
     )
-    def subscribe(self, request, id):
+    def subscribe(self, request, pk):
         """
         Подписка/отписка на автора рецепта.
         """
-        request_publisher = get_object_or_404(User, pk=id)
+        request_publisher = get_object_or_404(User, pk=pk)
         new_args = {
             'subscriber': request.user,
             'publisher': request_publisher,

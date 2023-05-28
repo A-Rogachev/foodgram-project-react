@@ -1,49 +1,54 @@
-
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import serializers
 
 from api.validators import validate_ingredients, validate_tags
-from recipes.models import (Ingredient, IngredientAmount, Recipe,
-                            ShoppingCart, Tag)
 from users.models import Subscription
 
 User = get_user_model()
 
 
-class FoodgramUserSerializer(UserSerializer):
+class FoodgramUserSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели User (пользователь).
     """
 
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = (
             'email',
             'id',
+            'password',
             'username',
             'first_name',
             'last_name',
             'is_subscribed',
         )
-        read_only_fields = ('is_subscribed', )
+        extra_kwargs = {'password': {'write_only': True}, }
 
     def get_is_subscribed(self, user_obj):
         """
         Возвращает true/false в зависимости, от того, является ли
         текущий пользователь подписчиком.
         """
-        subscriber = self.context.get('request').user
-        if subscriber.is_anonymous:
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(
-            subscriber=subscriber,
+            subscriber=request.user,
             publisher=user_obj.pk
         ).exists()
+
+    def create(self, validated_data):
+        """
+        Для регистрации нового пользователя.
+        """
+        return User.objects.create_user(**validated_data)
 
 
 class TagSerializer(serializers.ModelSerializer):

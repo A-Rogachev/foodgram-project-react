@@ -157,10 +157,11 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'current_user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.FoodgramUserSerializer',
     },
     'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        "user": ["rest_framework.permissions.IsAuthenticated"],
+        # 'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_list': ['rest_framework.permissions.AllowAny'],
     },
 }

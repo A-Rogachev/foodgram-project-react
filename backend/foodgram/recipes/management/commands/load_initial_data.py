@@ -14,7 +14,6 @@ from recipes.models import Ingredient
 DATA_DIRECTORY: str = settings.DATA_FILE_PATH
 os.chdir(DATA_DIRECTORY)
 
-
 data_for_database = [
     Enum(
         'DataFile',
@@ -47,7 +46,9 @@ class Command(BaseCommand):
                         )
                         for row in reader:
                             data_args: Dict[str, str] = dict(**row)
-                            objects_queue.append(data_file.MODEL.value(**data_args))
+                            objects_queue.append(
+                                data_file.MODEL.value(**data_args)
+                            )
 
                 elif data_file.FILENAME.value.endswith('json'):
                     with open(data_file.FILENAME.value, 'rb') as json_file:
@@ -68,8 +69,9 @@ class Command(BaseCommand):
             except IntegrityError:
                 self.stdout.write(
                     self.style.ERROR(
-                        f'Oшибка при работе с файлом {data_file.FILENAME.value}'
-                        '\nРабота загрузчика прервана!'
+                        f'Oшибка при работе с файлом '
+                        f'{data_file.FILENAME.value}\n'
+                        'Работа загрузчика прервана!'
                     )
                 )
                 sys.exit()

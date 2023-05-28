@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from recipes.models import Tag
 
+
 def validate_tags(tags_ids=None):
     """
     Проверяет корректность переданных тегов.
