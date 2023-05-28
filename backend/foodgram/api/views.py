@@ -4,19 +4,20 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
+
+from api.filters import RecipesFilter
 from api.paginators import PageNumberPaginationWithLimit
 from api.permissions import IsAuthorOrAdminOrReadOnly
-from api.serializers import (FoodgramUserSerializer, FavoriteRecipeSerializer,
+from api.serializers import (FavoriteRecipeSerializer, FoodgramUserSerializer,
                              IngredientSerializer, RecipeSerializer,
                              ShoppingCartSerializer, SubscriptionSerializer,
                              TagSerializer)
-from api.filters import RecipesFilter
 from api.utils import create_request_obj, delete_request_obj
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag)
