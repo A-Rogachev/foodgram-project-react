@@ -265,7 +265,9 @@ class RecipeViewset(viewsets.ModelViewSet):
             date_of_loading_list = datetime.now().strftime("%d.%m.%Y (%H:%M)")
             new_shopping_list = []
             new_shopping_list.append('Пользователь: ' + current_user.username)
-            new_shopping_list_name = f'Список покупок на {date_of_loading_list}'
+            new_shopping_list_name = (
+                f'Список покупок на {date_of_loading_list}'
+            )
             new_shopping_list.append(new_shopping_list_name)
             new_shopping_list.append('-' * len(new_shopping_list_name) + '\n')
             for ingredient in shopping_ingredients:

@@ -117,7 +117,7 @@ class Recipe(models.Model):
         verbose_name='Изображение для рецепта',
         help_text='Загрузите изображение рецепта',
     )
-    ingredients = models.ManyToManyField(
+    _ingredients = models.ManyToManyField(
         'Ingredient',
         related_name='recipes',
         through='IngredientAmount',
@@ -144,6 +144,13 @@ class Recipe(models.Model):
         Строковое представление рецепта.
         """
         return f'{self.name}'
+
+    @property
+    def ingredients(self):
+        answer = []
+        for each in self._ingredients.all():
+            answer.append(each.ingredientamount_set.filter(recipe=self))
+        return answer
 
 
 class IngredientAmount(models.Model):
