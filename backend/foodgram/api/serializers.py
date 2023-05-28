@@ -266,13 +266,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         """
         request = self.context.get('user_request')
         recipes = obj.publisher.recipes.all()
-        try:
-            limit_of_objects_on_page = abs(
-                int(request.query_params.get('recipes_limit')),
-            )
-        except ValueError:
-            limit_of_objects_on_page = 0
+        limit_of_objects_on_page = request.query_params.get(
+            'recipes_limit'
+        )
         if limit_of_objects_on_page:
+            try:
+                limit_of_objects_on_page = abs(int(limit_of_objects_on_page))
+            except ValueError:
+                limit_of_objects_on_page = 0
             recipes = recipes[:int(limit_of_objects_on_page)]
         serializer = FavoriteRecipeSerializer(recipes, many=True)
         return serializer.data
