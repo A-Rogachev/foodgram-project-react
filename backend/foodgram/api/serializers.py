@@ -265,9 +265,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         Рецепты автора, на которого подписан пользователь.
         """
         request = self.context.get('user_request')
-        limit_of_objects_on_page = request.query_params.get('recipes_limit')
-
         recipes = obj.publisher.recipes.all()
+        try:
+            limit_of_objects_on_page = abs(
+                int(request.query_params.get('recipes_limit')),
+            )
+        except ValueError:
+            limit_of_objects_on_page = 0
         if limit_of_objects_on_page:
             recipes = recipes[:int(limit_of_objects_on_page)]
         serializer = FavoriteRecipeSerializer(recipes, many=True)
