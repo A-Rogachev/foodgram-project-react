@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser.serializers import SetPasswordSerializer
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -46,42 +45,6 @@ class FoodgramUserViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthorOrAdminOrReadOnly]
         return [permission() for permission in permission_classes]
-
-    @action(
-        ['POST'],
-        detail=False,
-        permission_classes=(IsAuthenticated,),
-    )
-    def set_password(self, request, *args, **kwargs):
-        serializer = SetPasswordSerializer(
-            data=request.data,
-            context={'request': request},
-        )
-        if serializer.is_valid(raise_exception=True):
-            self.request.user.set_password(
-                serializer.validated_data['new_password'],
-            )
-            self.request.user.save()
-            return Response(
-                'Пароль успешно изменен',
-                status=status.HTTP_204_NO_CONTENT,
-            )
-        else:
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    @action(
-        ['GET'],
-        detail=False,
-        permission_classes=(IsAuthenticated, ),
-    )
-    def me(self, request, *args, **kwargs):
-        """
-        Персональная страница пользователя.
-        """
-        return Response(self.serializer_class(request.user).data)
 
     @action(
         ['GET'],

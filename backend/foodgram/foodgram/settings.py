@@ -159,6 +159,7 @@ DJOSER = {
     'HIDE_USERS': False,
     'SERIALIZERS': {
         'current_user': 'api.serializers.FoodgramUserSerializer',
+        'user': 'djoser.serializers.UserSerializer',
     },
     'PERMISSIONS': {
         "user": ["rest_framework.permissions.IsAuthenticated"],

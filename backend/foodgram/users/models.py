@@ -1,10 +1,9 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.validators import RegexValidator
 from django.db import models
 
-from users.validators import validate_username_not_me, validate_name
+from users.validators import validate_name, validate_username_not_me
 
 
 class User(AbstractUser):
