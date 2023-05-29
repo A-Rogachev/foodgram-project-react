@@ -1,7 +1,7 @@
 from colorfield.fields import ColorField
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from recipes.validators import validate_for_nonpunctuation_marks
@@ -175,6 +175,7 @@ class IngredientAmount(models.Model):
         default=1,
         validators=[
             MinValueValidator(1),
+            MaxValueValidator(settings.LIMIT_INGREDIENT_AMOUNT),
         ],
     )
 
