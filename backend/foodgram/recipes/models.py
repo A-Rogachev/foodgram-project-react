@@ -120,12 +120,6 @@ class Recipe(models.Model):
         verbose_name='Изображение для рецепта',
         help_text='Загрузите изображение рецепта',
     )
-    ingredients = models.ManyToManyField(
-        'Ingredient',
-        related_name='recipes',
-        through='IngredientAmount',
-        verbose_name='Ингредиенты',
-    )
     tags = models.ManyToManyField(
         'Tag',
         related_name='recipes',
@@ -155,12 +149,13 @@ class IngredientAmount(models.Model):
     """
     recipe = models.ForeignKey(
         Recipe,
-        related_name='ingredients_amount',
+        related_name='ingredients',
         on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.PROTECT,
+        related_name='+',
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
@@ -199,6 +194,7 @@ class FavoriteRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='+',
     )
 
     class Meta:
@@ -234,6 +230,7 @@ class ShoppingCart(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
+        related_name='+',
     )
 
     class Meta:
