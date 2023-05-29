@@ -5,10 +5,14 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.serializers import UserCreateSerializer
+from djoser.views import UserViewSet
+
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
 
 from api.filters import RecipesFilter
 from api.paginators import PageNumberPaginationWithLimit
@@ -34,11 +38,23 @@ class FoodgramUserViewSet(viewsets.ModelViewSet):
     serializer_class = FoodgramUserSerializer
     pagination_class = PageNumberPaginationWithLimit
 
+    def create(self, request, *args, **kwargs):
+        """
+        Использует функционал djoser для создания нового пользователя.
+        """
+        self.serializer_class = UserCreateSerializer
+        return Response(
+            FoodgramUserSerializer(
+                UserViewSet.create(self, request, *args, **kwargs).data
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
+
     def get_permissions(self):
         """
         Определяет доступ в зависимости от аутентификации пользователя.
         """
-        if self.action in ('retrieve', 'me', 'subscriptions'):
+        if self.action in ('retrieve', 'subscriptions'):
             permission_classes = [IsAuthenticated]
         elif self.action == 'create':
             permission_classes = [AllowAny]

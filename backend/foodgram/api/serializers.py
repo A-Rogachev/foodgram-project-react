@@ -23,13 +23,11 @@ class FoodgramUserSerializer(serializers.ModelSerializer):
         fields = (
             'email',
             'id',
-            'password',
             'username',
             'first_name',
             'last_name',
             'is_subscribed',
         )
-        extra_kwargs = {'password': {'write_only': True}, }
 
     def get_is_subscribed(self, user_obj):
         """
@@ -43,12 +41,6 @@ class FoodgramUserSerializer(serializers.ModelSerializer):
             subscriber=request.user,
             publisher=user_obj.pk
         ).exists()
-
-    def create(self, validated_data):
-        """
-        Для регистрации нового пользователя.
-        """
-        return User.objects.create_user(**validated_data)
 
 
 class TagSerializer(serializers.ModelSerializer):
