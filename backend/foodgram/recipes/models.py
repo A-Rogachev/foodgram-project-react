@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
+from recipes.validators import validate_for_nonpunctuation_marks
+
 User = get_user_model()
 
 
@@ -15,15 +17,10 @@ class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название тега',
-        max_length=settings.LIMIT_TAG_NAME_LENGTH,
+        max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
         validators=[
-            RegexValidator(
-                regex=r'[-А-Яа-яA-Za-z0-9\s]+$',
-                message=(
-                    'Символы $%^&#:;! запрещены для использования!'
-                )
-            )
-        ]
+            validate_for_nonpunctuation_marks,
+        ],
     )
     color = ColorField(
         default='#FF0000',
@@ -35,7 +32,7 @@ class Tag(models.Model):
         verbose_name='Слаг тега',
         help_text='Введите слаг для тега',
         unique=True,
-        max_length=settings.LIMIT_SLUG_NAME,
+        max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
     )
 
     class Meta:
@@ -57,13 +54,16 @@ class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название ингредиента',
-        max_length=settings.LIMIT_INGREDIENT_NAME_LENGTH,
+        max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
         db_index=True,
+        validators=[
+            validate_for_nonpunctuation_marks,
+        ],
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
         help_text='Введите единицу измерения',
-        max_length=settings.LIMIT_INGREDIENT_MEASUREMENT_NAME_LENGTH,
+        max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
     )
 
     class Meta:
@@ -93,12 +93,15 @@ class Recipe(models.Model):
         verbose_name='Автор рецепта',
         on_delete=models.CASCADE,
         related_name='recipes',
+        validators=[
+            validate_for_nonpunctuation_marks,
+        ],
     )
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название рецепта',
         unique=True,
-        max_length=settings.LIMIT_RECIPE_NAME,
+        max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
     )
     text = models.TextField(
         verbose_name='Описание',

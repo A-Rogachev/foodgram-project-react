@@ -17,10 +17,10 @@ def validate_name(value):
     """
     Проверка строки на недопустимые символы.
     """
-    if not re.fullmatch(
+    if re.fullmatch(
         pattern=r'[А-Яа-яA-Za-z]+$',
         string=value,
-    ):
+    ) is None:
         raise ValidationError(
             'Вводимое значение должно содержать только буквы!'
         )
