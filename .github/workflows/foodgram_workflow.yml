@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         cd backend/
-        pip install -r api_yamdb/requirements.txt
+        pip install -r requirements.txt
         echo 'Зависимости приложения успешно установлены'
 
     - name: PEP8 test with flake8
