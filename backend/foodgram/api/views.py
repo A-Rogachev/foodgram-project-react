@@ -268,6 +268,6 @@ class RecipeViewset(viewsets.ModelViewSet):
                 content_type='text/plain; charset=UTF-8',
             )
             response['Content-Disposition'] = (
-                f'attachment; filename=Shopping List {date_of_loading}.txt'
+                f'attachment; filename=Shopping_List({date_of_loading}).txt'
             )
             return response
