@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -200,7 +201,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.clear()
         recipe.tags.set(tags)
         ingredients = validated_data.pop('ingredients')
-        recipe.ingredients.clear()
+        IngredientAmount.objects.filter(recipe=recipe).delete()
         self.create_ingredients(ingredients, recipe)
 
         return super().update(recipe, validated_data)
