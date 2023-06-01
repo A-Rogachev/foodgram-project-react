@@ -244,11 +244,11 @@ class RecipeViewset(viewsets.ModelViewSet):
                 Sum('amount', distinct=True)
             )
 
-            date_of_loading_list = datetime.now().strftime("%d.%m.%Y (%H:%M)")
+            date_of_loading = datetime.now().strftime("%d.%m.%Y (%H:%M)")
             new_shopping_list = []
             new_shopping_list.append('Пользователь: ' + current_user.username)
             new_shopping_list_name = (
-                f'Список покупок на {date_of_loading_list}'
+                f'Список покупок на {date_of_loading}'
             )
             new_shopping_list.append(new_shopping_list_name)
             new_shopping_list.append('-' * len(new_shopping_list_name) + '\n')
@@ -268,7 +268,6 @@ class RecipeViewset(viewsets.ModelViewSet):
                 content_type='text/plain; charset=UTF-8',
             )
             response['Content-Disposition'] = (
-                f'attachment; filename=Shopping List '
-                f'({current_user.username}) {date_of_loading_list}.txt'
+                f'attachment; filename=Shopping List {date_of_loading}.txt'
             )
             return response
