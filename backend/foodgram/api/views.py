@@ -139,7 +139,7 @@ class TagViewSet(mixins.ListModelMixin,
 
 class IngredientViewSet(mixins.ListModelMixin,
                         mixins.RetrieveModelMixin,
-                        viewsets.GenericViewSet):
+                        viewsets.GenericViewSet,):
     """
     Вьюсет для работы с моделью Ingredient (ингредиент для рецепта).
     """

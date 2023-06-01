@@ -6,10 +6,13 @@ from enum import Enum
 from typing import Dict
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 from django.db import IntegrityError
 
 from recipes.models import Ingredient, Tag
+
+User = get_user_model()
 
 DATA_DIRECTORY: str = settings.DEFAULT_DATA_FILE_PATH
 os.chdir(DATA_DIRECTORY)
@@ -30,7 +33,7 @@ data_for_database = [
             ('FILENAME', 'default_tags.json'),
             ('FIELD_NAMES', ('name', 'color', 'slug')),
         ]
-    )
+    ),
 ]
 
 
@@ -92,6 +95,6 @@ class Command(BaseCommand):
                 )
         self.stdout.write(
             self.style.SUCCESS(
-                'Работа загрузчика завершена успешно!'
+                '\n--- Работа загрузчика завершена успешно ---!\n'
             )
         )
