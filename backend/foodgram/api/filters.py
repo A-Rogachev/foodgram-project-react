@@ -1,14 +1,21 @@
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
-from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import FilterSet
 
-from recipes.models import FavoriteRecipe, ShoppingCart, Tag
+from recipes.models import FavoriteRecipe, Ingredient, ShoppingCart, Tag
 
 User = get_user_model()
 
 
-class IngredientSearchFilter(SearchFilter):
-    search_param = 'name'
+class IngredientSearchFilter(FilterSet):
+    """
+    Для поиска ингредиентов на фронтенде.
+    """
+    name = filters.CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name', )
 
 
 class RecipesFilter(filters.FilterSet):
