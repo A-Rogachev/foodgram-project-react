@@ -1,9 +1,14 @@
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
+from rest_framework.filters import SearchFilter
 
 from recipes.models import FavoriteRecipe, ShoppingCart, Tag
 
 User = get_user_model()
+
+
+class IngredientSearchFilter(SearchFilter):
+    search_param = 'name'
 
 
 class RecipesFilter(filters.FilterSet):

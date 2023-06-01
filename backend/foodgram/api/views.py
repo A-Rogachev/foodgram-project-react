@@ -14,7 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 
-from api.filters import RecipesFilter
+from api.filters import IngredientSearchFilter, RecipesFilter
 from api.paginators import PageNumberPaginationWithLimit
 from api.permissions import IsAuthorOrAdminOrReadOnly
 from api.serializers import (FavoriteRecipeSerializer, FoodgramUserSerializer,
@@ -148,8 +148,8 @@ class IngredientViewSet(mixins.ListModelMixin,
     serializer_class = IngredientSerializer
     pagination_class = None
     permission_classes = (AllowAny, )
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('^ingredient__name', )
+    filter_backends = (IngredientSearchFilter, )
+    search_fields = ('^name', )
 
 
 class RecipeViewset(viewsets.ModelViewSet):

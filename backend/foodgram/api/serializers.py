@@ -95,7 +95,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = FoodgramUserSerializer(read_only=True)
     ingredients = IngredientSerializerWithMeasurement(
         many=True,
-        source='ingredients_amount'
+        # source='ingredients'
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
