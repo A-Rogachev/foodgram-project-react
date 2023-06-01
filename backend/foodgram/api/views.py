@@ -149,7 +149,7 @@ class IngredientViewSet(mixins.ListModelMixin,
     pagination_class = None
     permission_classes = (AllowAny, )
     filter_backends = (filters.SearchFilter, )
-    search_fields = ('^name', )
+    search_fields = ('^ingredient__name', )
 
 
 class RecipeViewset(viewsets.ModelViewSet):
