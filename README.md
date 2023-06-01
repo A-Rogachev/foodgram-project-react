@@ -4,8 +4,9 @@
 # <p align=center>Foodgram</p>
 #### *<p align=center>Проект "Продуктовый помощник"<br>Онлайн сервис и API*</p>
 ---
-Адрес сервера с развернутым проектом: [http://158.160.54.179/](http://158.160.54.179/)
-Пользователь-администратор: login: **admin**, password: **supernewpassword**
+Адрес сервера с развернутым проектом: [http://158.160.54.179/](http://158.160.54.179/)</br>
+Пользователь-администратор: email: **admin@mail.ru**, password: **supernewpassword**</br>
+
 ![](https://github.com/A-Rogachev/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
 
 ![readmeimage2](https://github.com/A-Rogachev/foodgram-project-react/assets/97498636/39fc0a03-b4d9-426e-9bc6-d8daa16d5a9c)
