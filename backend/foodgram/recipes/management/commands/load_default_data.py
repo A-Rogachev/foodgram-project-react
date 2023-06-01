@@ -9,9 +9,9 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import IntegrityError
 
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
-DATA_DIRECTORY: str = settings.DATA_FILE_PATH
+DATA_DIRECTORY: str = settings.DEFAULT_DATA_FILE_PATH
 os.chdir(DATA_DIRECTORY)
 
 data_for_database = [
@@ -23,6 +23,14 @@ data_for_database = [
             ('FIELD_NAMES', ('name', 'measurement_unit')),
         ]
     ),
+    Enum(
+        'DataFile',
+        [
+            ('MODEL', Tag),
+            ('FILENAME', 'default_tags.json'),
+            ('FIELD_NAMES', ('name', 'color', 'slug')),
+        ]
+    )
 ]
 
 
