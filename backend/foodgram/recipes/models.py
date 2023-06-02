@@ -93,15 +93,15 @@ class Recipe(models.Model):
         verbose_name='Автор рецепта',
         on_delete=models.CASCADE,
         related_name='recipes',
-        validators=[
-            validate_for_nonpunctuation_marks,
-        ],
     )
     name = models.CharField(
         verbose_name='Название',
         help_text='Введите название рецепта',
         unique=True,
         max_length=settings.LIMIT_TAG_INGREDIENT_RECIPE_SLUG_NAME,
+        validators=[
+            validate_for_nonpunctuation_marks,
+        ],
     )
     text = models.TextField(
         verbose_name='Описание',

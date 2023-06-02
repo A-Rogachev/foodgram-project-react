@@ -10,6 +10,7 @@ class RecipeIngredientInline(admin.TabularInline):
     в админ-панели.
     """
     model = IngredientAmount
+    min_num = 1
 
 
 class IngredientAdmin(admin.ModelAdmin):

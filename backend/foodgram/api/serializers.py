@@ -93,10 +93,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     tags = TagSerializer(read_only=True, many=True)
     author = FoodgramUserSerializer(read_only=True)
-    ingredients = IngredientSerializerWithMeasurement(
-        many=True,
-        # source='ingredients'
-    )
+    ingredients = IngredientSerializerWithMeasurement(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
